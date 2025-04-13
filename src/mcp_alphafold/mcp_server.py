@@ -1,11 +1,8 @@
-import signal
-import sys
 from typing import Optional
 
-import anyio
 from mcp.server.fastmcp import FastMCP
 from mcp.server.fastmcp.utilities.logging import get_logger
-from tools.tools import (
+from tools.alphafold import (
     get_alpha_fold_prediction,
     get_uniprot_summary,
     get_annotations,
@@ -65,27 +62,17 @@ async def annotations_tool(qualifier: str, annotation_type: str = "MUTAGEN") -> 
     return await get_annotations(qualifier, annotation_type)
 
 
-def run_server():
+async def start_server():
     """Run the MCP server with the STDIO transport."""
     
-    def handle_sigint(sig, frame):
-        logger.info("\nShutting down the server ...")
-        sys.exit(0)
-    
-    # Register only for SIGINT
-    signal.signal(signal.SIGINT, handle_sigint)
-
-    logger.info("Starting MCP server ...")
     try:
-        anyio.run(mcp_app.run_stdio_async)
+        await mcp_app.run_stdio_async()
         logger.info("MCP server stopped.")
         return 0
     except Exception as e:
         logger.error(f"Error running MCP server: {e}")
         return 1
 
-
 if __name__ == "__main__":
-    logger.info("Server script started.")
-    run_server()
-    logger.info("Server script ended.")
+    import asyncio
+    asyncio.run(start_server())

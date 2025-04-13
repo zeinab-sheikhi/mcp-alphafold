@@ -1,7 +1,7 @@
 from typing import Any, List, Optional
 
 from http_client import request_api
-from models import (
+from tools.models import (
     UniprotSummaryResponse,
     AnnotationResponse,
     EntrySummaryResponse,
@@ -100,7 +100,7 @@ async def get_annotations(
     response, error = await request_api(
         url=url,
         method="GET",
-        response_model_type=AnnotationResponse,  # Pass the model type here
+        response_model_type=AnnotationResponse,
         tls_version=None,
     )
     if response:
@@ -111,4 +111,3 @@ async def get_annotations(
         ]
     
     return data
-    
