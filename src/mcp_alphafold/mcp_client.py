@@ -1,3 +1,4 @@
+import os
 from contextlib import AsyncExitStack
 from typing import Any, List, Optional
 
@@ -18,7 +19,19 @@ class MCPClient:
         self.anthropic = Anthropic()
         self.model = "claude-3-5-sonnet-20241022"
         self._client = None
+        self.system_prompt = self.read_system_prompt()
+        self.message_history = []
 
+    def read_system_prompt(self):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        prompt_path = os.path.join(script_dir, 'prompt.md')
+        try:
+            with open(prompt_path, 'r') as file:
+                return file.read()
+        except FileNotFoundError:
+            print(f"Error: The file {prompt_path} was not found.")
+            return ""
+    
     async def connect(self, server_script_path: str):
         """Connect to an MCP server
 
@@ -58,7 +71,7 @@ class MCPClient:
 
     async def process_query(self, query: str) -> str:
         """Process a query using Claude and available tools"""
-        messages = [{"role": "user", "content": query}]
+        self.message_history.append({"role": "user", "content": query})
         
         available_tools = await self.get_tools()
         
@@ -66,8 +79,9 @@ class MCPClient:
         response = self.anthropic.messages.create(
             model=self.model, 
             max_tokens=1000,
-            messages=messages, 
+            messages=self.message_history, 
             tools=available_tools, 
+            system=self.system_prompt,
         ) 
     
         # Process the response
@@ -87,11 +101,11 @@ class MCPClient:
                 
                 result_text = tool_result
                 assistant_message_content.append(content)
-                messages.append({
+                self.message_history.append({
                     "role": "assistant", 
                     "content": assistant_message_content,
                 })
-                messages.append({
+                self.message_history.append({
                     "role": "user", 
                     "content": [
                         {
@@ -106,7 +120,7 @@ class MCPClient:
                 response = self.anthropic.messages.create(
                     model=self.model,
                     max_tokens=1000,
-                    messages=messages,
+                    messages=self.message_history,
                     tools=available_tools,
                 )
                 if response.content:
