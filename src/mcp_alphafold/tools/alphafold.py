@@ -1,7 +1,7 @@
 from typing import Any, List, Optional
 
-from http_client import request_api
-from tools.models import (
+from http_utils import request_api
+from .models import (
     UniprotSummaryResponse,
     AnnotationResponse,
     EntrySummaryResponse,
