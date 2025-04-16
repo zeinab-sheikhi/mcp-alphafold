@@ -122,6 +122,7 @@ class MCPClient:
                     max_tokens=1000,
                     messages=self.message_history,
                     tools=available_tools,
+                    system=self.system_prompt,
                 )
                 if response.content:
                     final_text.append(response.content[0].text)
