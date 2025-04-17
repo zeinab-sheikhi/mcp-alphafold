@@ -30,31 +30,15 @@ async def alpha_fold_prediction_tool(
 @with_docstring("uniprot_summary.md")
 @mcp_app.tool()
 async def uniprot_summary_tool(qualifier: str) -> str:
-    """
-    Get all AlphaFold models for the UniProt residue range.
-    
-    Args:
-        qualifier (str): UniProtKB accession number (AC), entry name (ID) or CRC64 checksum of the UniProt sequence.
-
-    Returns:
-        str: JSON formatted string of the UniProt summary.
-    """
     return await get_uniprot_summary(qualifier)
 
 
 @with_docstring("uniprot_annotations.md")
 @mcp_app.tool()
-async def annotations_tool(qualifier: str, annotation_type: str = "MUTAGEN") -> str:
-    """
-    Get all annotations for a UniProt residue range.
-    
-    Args:
-        qualifier (str): UniProt accession.
-        annotation_type (str): Type of annotation (e.g., MUTAGEN for AlphaMissense).
-
-    Returns:
-        str: JSON formatted string of the annotation data.
-    """
+async def annotations_tool(
+    qualifier: str,
+    annotation_type: str = "MUTAGEN",
+) -> str:
     return await get_annotations(qualifier, annotation_type)
 
 
