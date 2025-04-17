@@ -7,7 +7,7 @@ from tools.alphafold import (
     get_uniprot_summary,
     get_annotations,
 )
-from utils.tool_util import with_docstring
+from utils.tool_utils import with_docstring
 
 
 logger = get_logger("httpx")
@@ -16,7 +16,7 @@ logger.setLevel("WARN")
 logger = get_logger(__name__)
 logger.setLevel("INFO")
 
-mcp_app = FastMCP(name="BioMCP - Biomedical Model Context Protocol Server")
+mcp_app = FastMCP(name="AlphaFoldMCP")
 
 
 @with_docstring("alphafold_prediction.md")

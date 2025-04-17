@@ -1,7 +1,5 @@
-"""Tool execution utility with parallel execution support."""
+"""Tool execution utility."""
 
-import asyncio
-from typing import Any, Dict, List
 from pathlib import Path
 
 

@@ -1,5 +1,10 @@
 from .history_util import MessageHistory
-from .tool_util import execute_tools, load_docstring, with_docstring
+from .tool_utils import with_docstring
+from .http_utils import request_api
 
 
-__all__ = ["MessageHistory", "execute_tools", "load_docstring", "with_docstring"]
+__all__ = [
+    "MessageHistory",
+    "with_docstring",
+    "request_api" 
+]

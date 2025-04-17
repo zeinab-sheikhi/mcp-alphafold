@@ -1,7 +1,7 @@
 import json
 from typing import Any, List, Optional
 
-from http_utils import request_api
+from utils.http_utils import request_api
 from .models import (
     UniprotSummaryResponse,
     AnnotationResponse,

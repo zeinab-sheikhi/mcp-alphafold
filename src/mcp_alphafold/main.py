@@ -16,18 +16,6 @@ async def main():
         await chat_ui(client)
     finally:
         await client.cleanup()
-    
-    
-    # if len(sys.argv) < 2:
-    #     print("Usage: python client.py <path_to_server_script>")
-    #     sys.exit(1)
-    
-    # client = MCPClient()
-    # try:
-    #     await client.connect(sys.argv[1])
-    #     await client.chat_loop()
-    # finally:
-    #     await client.cleanup()
 
 if __name__ == "__main__":
     asyncio.run(main())
