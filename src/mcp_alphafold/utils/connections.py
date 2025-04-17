@@ -1,11 +1,14 @@
 """Connection handling for MCP servers."""
 
 from abc import ABC, abstractmethod
+from contextlib import AsyncExitStack
 from typing import Any, Dict, List
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.sse import sse_client
 from mcp.client.stdio import stdio_client
+
+from ..tools.mcp_tools import MCPTool
 
 
 class MCPConnection(ABC):

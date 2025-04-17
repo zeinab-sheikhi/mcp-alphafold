@@ -34,4 +34,3 @@ class MCPClient:
         if not client.connection:
             await client.connect()
         return ChatHandler(client)
-        
