@@ -18,7 +18,6 @@ class MCPClient:
         self.exit_stack = AsyncExitStack()
         self.anthropic = Anthropic()
         self.model = "claude-3-5-sonnet-20241022"
-        self._client = None
         self.system_prompt = self.read_system_prompt()
         self.message_history = []
 

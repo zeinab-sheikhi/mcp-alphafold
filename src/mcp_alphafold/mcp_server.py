@@ -7,7 +7,7 @@ from tools.alphafold import (
     get_uniprot_summary,
     get_annotations,
 )
-from utils.tool_utils import with_docstring
+from mcp_alphafold.utils.tool_util import with_docstring
 
 
 logger = get_logger("httpx")

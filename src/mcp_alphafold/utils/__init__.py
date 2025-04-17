@@ -1,6 +1,6 @@
 from .history_util import MessageHistory
-from .tool_utils import with_docstring
-from .http_utils import request_api
+from .tool_util import with_docstring
+from .http_util import request_api
 
 
 __all__ = [
