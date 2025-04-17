@@ -7,6 +7,7 @@ from tools.alphafold import (
     get_uniprot_summary,
     get_annotations,
 )
+from utils.tool_util import with_docstring
 
 
 logger = get_logger("httpx")
@@ -18,21 +19,15 @@ logger.setLevel("INFO")
 mcp_app = FastMCP(name="BioMCP - Biomedical Model Context Protocol Server")
 
 
+@with_docstring("alphafold_prediction.md")
 @mcp_app.tool()
-async def alpha_fold_prediction_tool(qualifier: str, sequence_checksum: Optional[str] = None) -> str:
-    """
-    Get all AlphaFold models for a UniProt accession.
+async def alpha_fold_prediction_tool(
+    qualifier: str,
+    sequence_checksum: Optional[str] = None,
+) -> str:
+    return await get_alpha_fold_prediction(qualifier, sequence_checksum)
     
-    Args:
-        qualifier (str): UniProt accession (e.g., 'Q5VSL9').
-        sequence_checksum (str, optional): CRC64 checksum of the UniProt sequence.
-
-    Returns:
-        str: JSON formatted string of the prediction metadata.
-    """
-    return await get_alpha_fold_prediction(qualifier, sequence_checksum, output_json=True)
-    
-
+@with_docstring("uniprot_summary.md")
 @mcp_app.tool()
 async def uniprot_summary_tool(qualifier: str) -> str:
     """
@@ -47,6 +42,7 @@ async def uniprot_summary_tool(qualifier: str) -> str:
     return await get_uniprot_summary(qualifier)
 
 
+@with_docstring("uniprot_annotations.md")
 @mcp_app.tool()
 async def annotations_tool(qualifier: str, annotation_type: str = "MUTAGEN") -> str:
     """

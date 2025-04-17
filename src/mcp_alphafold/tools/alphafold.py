@@ -1,3 +1,4 @@
+import json
 from typing import Any, List, Optional
 
 from http_utils import request_api
@@ -44,7 +45,7 @@ async def get_alpha_fold_prediction(
             {"error": f"Error {error.code}: {error.message}"}
         ]
     
-    return data
+    return json.dumps(data) if output_json else data
 
 
 async def get_uniprot_summary(
@@ -77,7 +78,7 @@ async def get_uniprot_summary(
             {"error": f"Error {error.code}: {error.message}"}
         ]
     
-    return data
+    return json.dumps(data) if output_json else data
    
 
 async def get_annotations(
@@ -110,4 +111,4 @@ async def get_annotations(
             {"error": f"Error {error.code}: {error.message}"}
         ]
     
-    return data
+    return json.dumps(data) if output_json else data
