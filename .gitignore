@@ -11,3 +11,4 @@ certs/
 .venv
 .env
 .python-version
+data/

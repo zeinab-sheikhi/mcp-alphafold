@@ -110,12 +110,12 @@ async def request_api(
 
     params: Optional[Dict[str, Any]] = None
     # convert request to param dict
-    if method == "POST" and request is not None:
+    if request is not None:
         if isinstance(request, BaseModel):
             params = request.model_dump(exclude_none=True, by_alias=True)
         else:
             params = request
-
+    print(params)
     # Short-Circuit if caching is not enabled
     if cache_ttl == 0:
         status, content = await call_http(
