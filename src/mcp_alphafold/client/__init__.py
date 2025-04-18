@@ -1,16 +1,14 @@
 from .mcp_client import MCPClient
 from .chat_handler import ChatHandler
-from .base import BaseMCPClient
-from .stdio_client import StdioMCPClient
-from .sse_client import SSEMCPClient
-from .connections import MCPConnectionSSE, MCPConnectionStdio
+from .base import BaseMCPClient, StdioMCPClient, SseMCPClient
+from .mcp_connection import MCPConnectionSSE, MCPConnectionStdio
 
 __all__ = [
     'MCPClient',
     'ChatHandler',
     'BaseMCPClient',
     'StdioMCPClient',
-    'SSEMCPClient',
+    'SseMCPClient',
     'MCPConnectionSSE',
     'MCPConnectionStdio',
 ]

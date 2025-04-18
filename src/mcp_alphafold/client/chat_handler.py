@@ -1,7 +1,8 @@
-from typing import Optional, List, Dict, Any
+from typing import Optional, Any
 from datetime import datetime
 import asyncio
 from .base import BaseMCPClient
+
 
 class ChatHandler:
     """Handler for chat interactions with MCP client."""
@@ -18,7 +19,7 @@ class ChatHandler:
         self.message_history.append({"role": "user", "content": query})
         
         try:
-            available_tools = await self.client.get_tools()
+            available_tools = await self.client.list_tools()
             
             response = self.client.anthropic.messages.create(
                 model=self.client.model,

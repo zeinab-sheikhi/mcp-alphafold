@@ -1,6 +1,12 @@
 from abc import ABC, abstractmethod
 from contextlib import AsyncExitStack
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
+
+from anthropic import Anthropic
+from dotenv import load_dotenv
+from .mcp_connection import MCPConnectionSSE, MCPConnectionStdio
+
+load_dotenv()
 
 
 class BaseMCPClient(ABC):
@@ -8,6 +14,8 @@ class BaseMCPClient(ABC):
     def __init__(self):
         self.stack = AsyncExitStack()
         self.connection = None
+        self.model = "claude-3-5-sonnet-20240620"
+        self.anthropic = Anthropic()
         self._tools = None
     
     @abstractmethod
@@ -20,7 +28,7 @@ class BaseMCPClient(ABC):
         if not self.connection:
             raise RuntimeError("Not conncted to MCP server.")
         if not self._tools: 
-            tools = self.connection.list_tools()
+            tools = await self.connection.list_tools()
             self._tools = [{
                 "name": tool.name, 
                 "description": tool.description, 
@@ -47,3 +55,46 @@ class BaseMCPClient(ABC):
     
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.cleanup()
+
+
+class SseMCPClient(BaseMCPClient):
+    """MCP client using SSE connection."""
+    def __init__(
+        self,
+        url: str,
+        headers: Optional[Dict[str, str]] = None,
+    ):
+        super().__init__()
+        self.url = url
+        self.headers = headers or {}
+    
+    async def connect(self):
+        """Connect to MCP server using SSE."""
+        self.connection = MCPConnectionSSE(
+            url=self.url, 
+            headers=self.headers,
+        )
+        await self.stack.enter_async_context(self.connection)
+
+
+class StdioMCPClient(BaseMCPClient):
+    """MCP client using standard input/output."""
+    def __init__(
+            self,
+            command: str,
+            args: Optional[List[str]] = None,
+            env: Optional[Dict[str, str]] = None,
+    ):
+        super().__init__()
+        self.command = command 
+        self.args = args or []
+        self.env = env or {}
+    
+    async def connect(self):
+        """Connect to MCP server using stdio."""
+        self.connection = MCPConnectionStdio(
+            command=self.command,
+            args=self.args,
+            env=self.env,
+        )
+        await self.stack.enter_async_context(self.connection)

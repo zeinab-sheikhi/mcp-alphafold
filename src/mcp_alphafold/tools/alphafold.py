@@ -1,7 +1,7 @@
 import json
 from typing import Any, List, Optional
 
-from mcp_alphafold.utils.http_util import request_api
+from utils.http_util import request_api
 from .models import (
     UniprotSummaryResponse,
     AnnotationResponse,

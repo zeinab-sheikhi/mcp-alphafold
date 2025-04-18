@@ -1,22 +1,25 @@
 import asyncio
 import os
-import streamlit as st
-from mcp_client import MCPClient
-from ui.chat import chat_ui
+from client.mcp_client import MCPClient
 
 
-async def main():
+async def run_client():
     os.environ.pop("SSL_CERT_FILE", None)
+    client = MCPClient.stdio(command="python", args=["src/mcp_alphafold/mcp_server.py"])
+    chat_handler = await MCPClient.create_chat_session(client)
+    print("Connected to MCP server...")
+    while True:
+        query = input("Enter your query or 'quit' to exit:\n")
+        if query.lower() == "quit":
+            break
+        response = await chat_handler.process_query(query)
+        print(response) 
 
-    st.set_page_config(layout="wide")
-    client = MCPClient()
-    await client.connect("src/mcp_alphafold/mcp_server.py")
 
-    try:
-        await chat_ui(client)
-    finally:
-        await client.cleanup()
+def main():
+    asyncio.run(run_client())
+
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
     # sys.exit(0)

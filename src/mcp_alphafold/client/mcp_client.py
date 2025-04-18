@@ -1,7 +1,5 @@
 from typing import Dict, List, Optional
-from .base import BaseMCPClient
-from .stdio_client import StdioMCPClient
-from .sse_client import SSEMCPClient
+from .base import BaseMCPClient, StdioMCPClient, SseMCPClient
 from .chat_handler import ChatHandler
 
 
@@ -21,9 +19,9 @@ class MCPClient:
         cls,
         url: str, 
         headers: Optional[Dict[str, str]] = None, 
-    ) -> SSEMCPClient:
+    ) -> SseMCPClient:
         "Create a SSE client."
-        return SSEMCPClient(url, headers)
+        return SseMCPClient(url, headers)
     
     @classmethod
     async def create_chat_session(
