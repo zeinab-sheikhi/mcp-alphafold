@@ -1,4 +1,6 @@
-.PHONY: help run-server clean install build-docker run-docker
+.PHONY: help run-server clean install install-uv build-docker run-docker
+
+UV_COMMAND := uv
 
 help:
 	@echo "Available commands:"
@@ -21,8 +23,11 @@ clean:
 	rm -rf .env.development.local
 	rm -rf .env.test.local
 
-install:
-	uv sync --all-extras
+install-uv: 
+	@which $(UV_COMMAND) >/dev/null 2>&1 || (echo "Could not find 'uv'! Installing..."; curl -LsSf https://astral.sh/uv/install.sh | sh)
+
+install: install-uv
+	uv sync
 
 build-docker:
 	docker build -t mcp-alphafold .

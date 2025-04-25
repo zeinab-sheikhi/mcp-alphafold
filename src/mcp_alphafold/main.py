@@ -1,25 +1,27 @@
 import asyncio
-import os
-from client.mcp_client import MCPClient
+from mcp_alphafold.mcp_server import alpahfold_mcp
 
-
-async def run_client():
-    """Run the MCP client."""
-    os.environ.pop("SSL_CERT_FILE", None)
-    client = MCPClient.stdio(command="python", args=["src/mcp_alphafold/mcp_server.py"])
-    chat_handler = await MCPClient.create_chat_session(client)
-    print("Connected to MCP server...")
-    while True:
-        query = input("Enter your query or 'quit' to exit:\n")
-        if query.lower() == "quit":
-            break
-        response = await chat_handler.process_query(query)
-        print(response) 
+# async def start_server():
+#     """Run the MCP server with the STDIO transport."""
     
+#     try:
+#         await alpahfold_mcp.run(transport="sse")
+#         # await mcp_app.run_stdio_async()
+#         logger.info("MCP server stopped.")
+#         return 0
+#     except Exception as e:
+#         logger.error(f"Error running MCP server: {e}")
+#         return 1
 
+# if __name__ == "__main__":
+#     import asyncio
+#     asyncio.run(start_server())
 
 def main():
-    asyncio.run(run_client())
+    try:
+        alpahfold_mcp.run(transport="sse")
+    except Exception as e:
+        print(f"Error running MCP server: {e}")
 
 
 if __name__ == "__main__":
