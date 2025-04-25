@@ -1,7 +1,11 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "alphafold-mcp"
 version = "0.1.0"
-description = "Add your description here"
+description = "MCP server for AlphaFold."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -14,3 +18,9 @@ dependencies = [
     "python-dotenv>=1.0.1",
     "streamlit>=1.44.1",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["mcp_alphafold"]
+
+[project.scripts]
+mcp-server = "mcp_alphafold.mcp_server:start_server"

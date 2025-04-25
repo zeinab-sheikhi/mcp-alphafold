@@ -2,6 +2,5 @@
 
 from . import models
 from . import alphafold
-from . import uniprot
 
-__all__ = ["models", "alphafold", "uniprot"]
+__all__ = ["models", "alphafold"]

@@ -16,7 +16,11 @@ logger.setLevel("WARN")
 logger = get_logger(__name__)
 logger.setLevel("INFO")
 
-mcp_app = FastMCP(name="AlphaFoldMCP")
+mcp_app = FastMCP(
+    name="AlphaFoldMCP",
+    host="0.0.0.0", 
+    port=8050,
+)
 
 
 @with_docstring("alphafold_prediction.md")
@@ -46,7 +50,8 @@ async def start_server():
     """Run the MCP server with the STDIO transport."""
     
     try:
-        await mcp_app.run_stdio_async()
+        await mcp_app.run(transport="sse")
+        # await mcp_app.run_stdio_async()
         logger.info("MCP server stopped.")
         return 0
     except Exception as e:
