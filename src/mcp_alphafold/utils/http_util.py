@@ -24,7 +24,11 @@ class RequestError(BaseModel):
     message: str
 
 
-def get_ssl_context(cert_file: str = None, key_file: str = None, tls_version: TLSVersion = TLSVersion.TLSv1_3) -> SSLContext:
+def get_ssl_context(
+        cert_file: str = None,
+        key_file: str = None,
+        tls_version: TLSVersion = TLSVersion.TLSv1_3,
+) -> SSLContext:
     """Create an SSLContext with the specified TLS version."""
     
     cert_file = cert_file or os.getenv("SSL_CERT_FILE")
@@ -53,7 +57,7 @@ def get_cache() -> Cache:
     return _cache
 
 
-def generate_cache_key(method: str, url: str, params: dict) -> str:
+def generate_cache_key(method: str, url: str, params: Dict[str, Any]) -> str:
     """Generate a cache key for a given HTTP request."""
     sha256_hash = hashlib.sha256()
     params_dump: str = json.dumps(params, sort_keys=True)
@@ -79,8 +83,8 @@ async def call_http(
         method: str, 
         url: str, 
         params: Optional[dict] = None, 
-        verify: Union[SSLContext, str, bool] = False
-) -> tuple[int, str]:
+        verify: Union[SSLContext, str, bool] = False,
+) -> Tuple[int, str]:
     """Perform an HTTP request(GET/POST)."""
     try:
         async with httpx.AsyncClient(verify=verify, http2=False) as client:
@@ -148,7 +152,11 @@ async def request_api(
     return parsed_response
 
 
-def parse_response(status_code: int, content: str, response_model_type: Optional[Type[T]] = None) -> Tuple[Optional[T], Optional[RequestError]]:
+def parse_response(
+        status_code: int,
+        content: str,
+        response_model_type: Optional[Type[T]] = None,
+) -> Tuple[Optional[T], Optional[RequestError]]:
     """Parse the HTTP response based on the status code"""
     if status_code != 200:
         return None, RequestError(code=status_code, message=content)
