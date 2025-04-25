@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 from anthropic import Anthropic
 from dotenv import load_dotenv
-from .mcp_connection import MCPConnectionSSE, MCPConnectionStdio
+from .mcp_connection import MCPConnectionSSE, MCPConnectionStdio, MCPConnection
 
 load_dotenv()
 
@@ -13,10 +13,10 @@ class BaseMCPClient(ABC):
     """Base class for MCP clients."""
     def __init__(self):
         self.stack = AsyncExitStack()
-        self.connection = None
-        self.model = "claude-3-5-sonnet-20240620"
-        self.anthropic = Anthropic()
-        self._tools = None
+        self.connection: MCPConnection = None
+        self.model: str = "claude-3-5-sonnet-20240620"
+        self.anthropic: Anthropic = Anthropic()
+        self._tools: List[Dict[str, Any]] = None
     
     @abstractmethod
     async def connect(self) -> None:
