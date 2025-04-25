@@ -1,28 +1,23 @@
-import asyncio
-from mcp_alphafold.mcp_server import alpahfold_mcp
+import argparse
 
-# async def start_server():
-#     """Run the MCP server with the STDIO transport."""
-    
-#     try:
-#         await alpahfold_mcp.run(transport="sse")
-#         # await mcp_app.run_stdio_async()
-#         logger.info("MCP server stopped.")
-#         return 0
-#     except Exception as e:
-#         logger.error(f"Error running MCP server: {e}")
-#         return 1
-
-# if __name__ == "__main__":
-#     import asyncio
-#     asyncio.run(start_server())
 
 def main():
-    try:
-        alpahfold_mcp.run(transport="sse")
-    except Exception as e:
-        print(f"Error running MCP server: {e}")
+    """
+    Main entry point for the mcp-server-alphafold script defined
+    in pyproject.toml. It runs the MCP server with a specific transport
+    protocol.
+    """
+    # Parse the command-line arguments to determine the transport protocol.
+    parser = argparse.ArgumentParser(description="mcp-server-qdrant")
+    parser.add_argument(
+        "--transport",
+        choices=["stdio", "sse"],
+        default="stdio",
+    )
+    args = parser.parse_args()
 
+    # Import is done here to make sure environment variables are loaded
+    # only after we make the changes.
+    from mcp_alphafold.mcp_server import alpahfold_mcp
 
-if __name__ == "__main__":
-    main()
+    alpahfold_mcp.run(transport=args.transport)
