@@ -1,5 +1,5 @@
 import argparse
-
+import sys
 
 def main():
     """
@@ -12,12 +12,17 @@ def main():
     parser.add_argument(
         "--transport",
         choices=["stdio", "sse"],
-        default="stdio",
+        default="sse",
     )
     args = parser.parse_args()
 
     # Import is done here to make sure environment variables are loaded
     # only after we make the changes.
-    from mcp_alphafold.mcp_server import alpahfold_mcp
+    from mcp_alphafold.mcp_server import alphafold_mcp
 
-    alpahfold_mcp.run(transport=args.transport)
+    alphafold_mcp.run(transport=args.transport)
+
+
+if __name__ == "__main__":
+    import sys
+    sys.exit(main())

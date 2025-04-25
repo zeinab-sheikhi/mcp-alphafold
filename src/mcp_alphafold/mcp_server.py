@@ -17,7 +17,7 @@ logger = get_logger(__name__)
 logger.setLevel("INFO")
 
 
-alpahfold_mcp = FastMCP(
+alphafold_mcp = FastMCP(
     name="AlphaFoldMCP",
     host="0.0.0.0", 
     port=8050,
@@ -25,7 +25,7 @@ alpahfold_mcp = FastMCP(
 
 
 @with_docstring("alphafold_prediction.md")
-@alpahfold_mcp.tool()
+@alphafold_mcp.tool()
 async def alpha_fold_prediction_tool(
     qualifier: str,
     sequence_checksum: Optional[str] = None,
@@ -33,13 +33,13 @@ async def alpha_fold_prediction_tool(
     return await get_alpha_fold_prediction(qualifier, sequence_checksum)
     
 @with_docstring("uniprot_summary.md")
-@alpahfold_mcp.tool()
+@alphafold_mcp.tool()
 async def uniprot_summary_tool(qualifier: str) -> str:
     return await get_uniprot_summary(qualifier)
 
 
 @with_docstring("uniprot_annotations.md")
-@alpahfold_mcp.tool()
+@alphafold_mcp.tool()
 async def annotations_tool(
     qualifier: str,
     annotation_type: str = "MUTAGEN",
