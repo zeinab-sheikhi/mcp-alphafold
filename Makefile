@@ -23,14 +23,17 @@ clean:
 	rm -rf .env.development.local
 	rm -rf .env.test.local
 
-install-uv: 
+install-uv:
 	@which $(UV_COMMAND) >/dev/null 2>&1 || (echo "Could not find 'uv'! Installing..."; curl -LsSf https://astral.sh/uv/install.sh | sh)
 
 install: install-uv
-	uv sync
+	uv sync --all-extras
 
 build-docker:
 	docker build -t mcp-alphafold .
 
 run-docker:
 	docker run -p 8050:8050 mcp-alphafold
+
+checks:
+	uv run pre-commit run --all-files

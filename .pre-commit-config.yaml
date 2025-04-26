@@ -9,6 +9,7 @@ repos:
     rev: v5.0.0
     hooks:
       - id: check-yaml
+      - id: check-toml
       - id: end-of-file-fixer
       - id: trailing-whitespace
       - id: check-ast
@@ -18,7 +19,7 @@ repos:
     rev: v0.9.10
     hooks:
       - id: ruff
-        args: [ --fix ]
+        args: [ --fix, --exit-non-zero-on-fix, --show-fixes]
       - id: ruff-format
 
   - repo: https://github.com/PyCQA/isort

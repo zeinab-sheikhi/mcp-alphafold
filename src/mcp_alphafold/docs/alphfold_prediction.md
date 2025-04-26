@@ -3,10 +3,10 @@
 This tool retrieves all available AlphaFold models for a specified UniProt accession. It allows querying by the UniProt accession or by the CRC64 checksum of the UniProt sequence.
 
 ## Arguments
-- **`qualifier`** (`str`):  
+- **`qualifier`** (`str`):
   UniProt accession (e.g., `'Q5VSL9'`).
 
-- **`sequence_checksum`** (`str`, optional):  
+- **`sequence_checksum`** (`str`, optional):
   CRC64 checksum of the UniProt sequence.
 
 ### Example Input:

@@ -35,6 +35,8 @@ dev-dependencies = [
     "pytest-asyncio>=0.23.0",
     "ruff>=0.8.0",
     "pytest-httpx",
+    "pytest-asyncio",
+    "pytest-mock",
 ]
 
 [tool.pytest.ini_options]
@@ -43,3 +45,21 @@ python_files = "test_*.py"
 python_functions = "test_*"
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+line-length = 120
+lint.select = [
+    "F",  # flake8 rules
+    "E",  # pydocstyle error rules
+    "W",  # pydocstyle warning rules
+    "B",  # flake8-bugbear rules
+    "I",  # isort rules
+]
+lint.ignore = [
+    "E501",  # line-too-long
+    "F841",  # Unused variable
+]
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "double"

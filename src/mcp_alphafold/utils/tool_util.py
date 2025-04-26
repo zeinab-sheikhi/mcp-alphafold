@@ -17,4 +17,5 @@ def with_docstring(md_file: str):
     def decorator(func):
         func.__doc__ = load_docstring(md_file)
         return func
+
     return decorator

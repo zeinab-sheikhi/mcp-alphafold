@@ -1,17 +1,16 @@
 import csv
 import hashlib
 import json
-import os 
+import os
 from io import StringIO
-from ssl import SSLContext, PROTOCOL_TLS_CLIENT, TLSVersion
-from typing import Any, Dict, Literal, Optional, Type, TypeVar, Tuple, Union
+from ssl import PROTOCOL_TLS_CLIENT, SSLContext, TLSVersion
+from typing import Any, Dict, Literal, Optional, Tuple, Type, TypeVar, Union
 
 import httpx
 from diskcache import Cache
 from dotenv import load_dotenv
 from platformdirs import user_cache_dir
 from pydantic import BaseModel
-
 
 load_dotenv()
 
@@ -25,25 +24,30 @@ class RequestError(BaseModel):
 
 
 def get_ssl_context(
-        cert_file: str = None,
-        key_file: str = None,
-        tls_version: TLSVersion = TLSVersion.TLSv1_3,
+    cert_file: Optional[str] = None,
+    key_file: Optional[str] = None,
+    tls_version: TLSVersion = TLSVersion.TLSv1_3,
 ) -> SSLContext:
     """Create an SSLContext with the specified TLS version."""
-    
-    cert_file = cert_file or os.getenv("SSL_CERT_FILE")
-    key_file = key_file or os.getenv("SSL_KEY_FILE")
-    
-    if not os.path.exists(cert_file):
-        raise FileNotFoundError(f"Certificate file not found at {cert_file}")
-    if not os.path.exists(key_file):
-        raise FileNotFoundError(f"Key file not found at {key_file}")
+
+    cert_file_path = cert_file or os.getenv("SSL_CERT_FILE")
+    key_file_path = key_file or os.getenv("SSL_KEY_FILE")
+
+    if not cert_file_path:
+        raise ValueError("Certificate file path not provided and SSL_CERT_FILE environment variable not set")
+    if not key_file_path:
+        raise ValueError("Key file path not provided and SSL_KEY_FILE environment variable not set")
+
+    if not os.path.exists(cert_file_path):
+        raise FileNotFoundError(f"Certificate file not found at {cert_file_path}")
+    if not os.path.exists(key_file_path):
+        raise FileNotFoundError(f"Key file not found at {key_file_path}")
 
     context = SSLContext(PROTOCOL_TLS_CLIENT)
-    context.load_cert_chain(certfile=cert_file, keyfile=key_file)
+    context.load_cert_chain(certfile=cert_file_path, keyfile=key_file_path)
     context.maximum_version = tls_version
     context.minimum_version = tls_version
-    context.load_verify_locations(cafile=cert_file)
+    context.load_verify_locations(cafile=cert_file_path)
     context.check_hostname = False  # disable for testing purposes
     return context
 
@@ -57,7 +61,11 @@ def get_cache() -> Cache:
     return _cache
 
 
-def generate_cache_key(method: str, url: str, params: Dict[str, Any]) -> str:
+def generate_cache_key(
+    method: str,
+    url: str,
+    params: Optional[Dict[str, Any]] = None,
+) -> str:
     """Generate a cache key for a given HTTP request."""
     sha256_hash = hashlib.sha256()
     params_dump: str = json.dumps(params, sort_keys=True)
@@ -80,10 +88,10 @@ def cache_response(cache_key: str, content: str, cache_ttl: int) -> None:
 
 
 async def call_http(
-        method: str, 
-        url: str, 
-        params: Optional[dict] = None, 
-        verify: Union[SSLContext, str, bool] = False,
+    method: str,
+    url: str,
+    params: Optional[Dict[str, Any]] = None,
+    verify: Union[SSLContext, str, bool] = False,
 ) -> Tuple[int, str]:
     """Perform an HTTP request(GET/POST)."""
     try:
@@ -98,28 +106,32 @@ async def call_http(
 
     except httpx.HTTPError as e:
         return 599, str(e)
-    
+
 
 async def request_api(
-        url: str, 
-        request: Optional[Union[BaseModel, Dict]] = None,
-        response_model_type: Optional[Type[T]] = None, 
-        method: Literal["GET", "POST"] = "GET",
-        cache_ttl: int = 86400, 
-        tls_version: Optional[TLSVersion] = TLSVersion.TLSv1_3,
+    url: str,
+    request: Optional[Union[BaseModel, Dict]] = None,
+    response_model_type: Optional[Type[T]] = None,
+    method: Literal["GET", "POST"] = "GET",
+    cache_ttl: int = 86400,
+    tls_version: Optional[TLSVersion] = TLSVersion.TLSv1_3,
 ) -> Tuple[Optional[T], Optional[RequestError]]:
     """Request API with caching logic"""
-    
-    verify = get_ssl_context(tls_version=tls_version) if tls_version else False
+
+    verify: Union[SSLContext, str, bool] = False
+    if tls_version:
+        ssl_context = get_ssl_context(tls_version=tls_version)
+        verify = ssl_context
 
     params: Optional[Dict[str, Any]] = None
+
     # convert request to param dict
     if request is not None:
         if isinstance(request, BaseModel):
             params = request.model_dump(exclude_none=True, by_alias=True)
         else:
             params = request
-    print(params)
+
     # Short-Circuit if caching is not enabled
     if cache_ttl == 0:
         status, content = await call_http(
@@ -129,33 +141,33 @@ async def request_api(
             verify=verify,
         )
         return parse_response(status, content, response_model_type)
-    
-    # caching enable 
+
+    # caching enable
     cache_key = generate_cache_key(method=method, url=url, params=params)
     cached_content = get_cache_response(cache_key=cache_key)
 
-    if cached_content: 
+    if cached_content:
         return parse_response(200, cached_content, response_model_type)
-    
+
     # Make HTTP request if not cached
     status, content = await call_http(
-        method=method, 
-        url=url, 
-        params=params, 
+        method=method,
+        url=url,
+        params=params,
         verify=verify,
     )
     parsed_response = parse_response(status, content, response_model_type)
 
     if status == 200:
         cache_response(cache_key, content, cache_ttl)
-    
+
     return parsed_response
 
 
 def parse_response(
-        status_code: int,
-        content: str,
-        response_model_type: Optional[Type[T]] = None,
+    status_code: int,
+    content: str,
+    response_model_type: Optional[Type[T]] = None,
 ) -> Tuple[Optional[T], Optional[RequestError]]:
     """Parse the HTTP response based on the status code"""
     if status_code != 200:

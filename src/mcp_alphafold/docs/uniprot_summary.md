@@ -3,7 +3,7 @@
 This tool fetches AlphaFold model predictions for a given UniProt residue range. The tool takes in a UniProt accession number (AC), entry name (ID), or CRC64 checksum and returns detailed information about the structure models available for the specified sequence range.
 
 ## Arguments
-- **`qualifier`** (`str`):  
+- **`qualifier`** (`str`):
   UniProtKB accession number (AC), entry name (ID), or CRC64 checksum of the UniProt sequence (e.g., `'Q5VSL9'`).
 
 

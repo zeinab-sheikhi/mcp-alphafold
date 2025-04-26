@@ -1,23 +1,21 @@
 import json
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
-from mcp_alphafold.utils.http_util import request_api
-from .models import (
-    UniprotSummaryResponse,
+from mcp_alphafold.tools.models import (
     AnnotationResponse,
     EntrySummaryResponse,
-    EntrySummary,
+    UniprotSummaryResponse,
 )
-
+from mcp_alphafold.utils.http_util import request_api
 
 BASE_URL = "https://alphafold.ebi.ac.uk/api"
 
 
 async def get_alpha_fold_prediction(
-        qualifier: str,
-        sequence_checksum: Optional[str] = None,
-        output_json: bool = True,
-) -> Optional[List[EntrySummary]]:
+    qualifier: str,
+    sequence_checksum: Optional[str] = None,
+    output_json: bool = True,
+) -> Union[str, Dict[str, Any]]:  # type: ignore[return-value]
     """
     Get all AlphaFold models for a UniProt accession.
     Args:
@@ -25,7 +23,9 @@ async def get_alpha_fold_prediction(
         sequence_checksum (str, optional): CRC64 checksum of the UniProt sequence
 
     Returns:
-        List[EntrySummary]: List of prediction metadata
+        Union[str, Dict[str, Any]]:
+            - If output_json=True: JSON string
+            - If output_json=False: List of entries or error dictionary
     """
     url = f"{BASE_URL}/prediction/{qualifier}"
     response, error = await request_api(
@@ -34,58 +34,53 @@ async def get_alpha_fold_prediction(
         tls_version=None,
         response_model_type=EntrySummaryResponse,
     )
-        
+    data: Union[List[Any], Dict[str, Any]]  # Add type annotation for data
     if response:
-        data = [
-            entry.model_dump_json(exclude_none=True)
-            for entry in response.root
-        ]
+        data = [entry.model_dump_json(exclude_none=True) for entry in response.root]
     else:
-        data: list[dict[str, Any]] = [
-            {"error": f"Error {error.code}: {error.message}"}
-        ]
-    
-    return json.dumps(data) if output_json else data
+        error_msg = f"Error {error.code if error else 'Unknown'}: {error.message if error else 'Unknown error'}"
+        data = {"error": error_msg}
+
+    return json.dumps(data) if output_json else data  # type: ignore
 
 
 async def get_uniprot_summary(
-        qualifier: str,
-        output_json: bool = True,
-) -> Optional[UniprotSummaryResponse]:
+    qualifier: str,
+    output_json: bool = True,
+) -> Union[str, Dict[str, Any]]:
     """
     Get UniProt summary and structure information for a protein.
 
     Args:
-        qualifier (str): UniProtKB accession number (AC), entry name (ID) 
+        qualifier (str): UniProtKB accession number (AC), entry name (ID)
                     or CRC64 checksum of the UniProt sequence
 
     Returns:
         Optional[UniprotSummaryResponse]: Complete response including UniProt entry and structures
     """
     url = f"{BASE_URL}/uniprot/summary/{qualifier}.json"
-    
+
     response, error = await request_api(
         url=url,
         method="GET",
         response_model_type=UniprotSummaryResponse,
         tls_version=None,
     )
-    
+
     if response:
         data = response.model_dump_json(exclude_none=True)
     else:
-        data: list[dict[str, Any]] = [
-            {"error": f"Error {error.code}: {error.message}"}
-        ]
-    
+        error_msg = f"Error {error.code if error else 'Unknown'}: {error.message if error else 'Unknown error'}"
+        data = {"error": error_msg}
+
     return json.dumps(data) if output_json else data
-   
+
 
 async def get_annotations(
-        qualifier: str, 
-        annotation_type: str = "MUTAGEN",
-        output_json: bool = True,
-) -> Optional[AnnotationResponse]:
+    qualifier: str,
+    annotation_type: str = "MUTAGEN",
+    output_json: bool = True,
+) -> Union[str, Dict[str, Any]]:
     """
     Get all annotations for a UniProt residue range.
 
@@ -96,8 +91,8 @@ async def get_annotations(
     Returns:
         Optional[AnnotationResponse]: Annotation data including residue scores
     """
-    url = f"{BASE_URL}/annotations/{qualifier}?annotation_type={annotation_type}"    
-    
+    url = f"{BASE_URL}/annotations/{qualifier}?annotation_type={annotation_type}"
+
     response, error = await request_api(
         url=url,
         method="GET",
@@ -107,8 +102,7 @@ async def get_annotations(
     if response:
         data = response.model_dump_json(exclude_none=True)
     else:
-        data: list[dict[str, Any]] = [
-            {"error": f"Error {error.code}: {error.message}"}
-        ]
-    
+        error_msg = f"Error {error.code if error else 'Unknown'}: {error.message if error else 'Unknown error'}"
+        data = {"error": error_msg}
+
     return json.dumps(data) if output_json else data

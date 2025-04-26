@@ -1,6 +1,8 @@
-import pytest
 from pathlib import Path
-from mcp_alphafold.utils.tool_util import with_docstring, load_docstring
+
+import pytest
+
+from mcp_alphafold.utils.tool_util import load_docstring, with_docstring
 
 
 @pytest.fixture
@@ -14,7 +16,7 @@ def mock_docs_dir(tmp_path, monkeypatch):
 
     def mock_parent_dir(*args, **kwargs):
         return tmp_path
-    
+
     monkeypatch.setattr(Path, "parent", property(mock_parent_dir))
     return docs_dir
 
@@ -33,8 +35,9 @@ def test_load_docstring_missing_file(mock_docs_dir):
 
 def test_with_docstring_decorator(mock_docs_dir):
     """Test the with_docstring decorator."""
+
     @with_docstring("test.md")
     def test_function():
         pass
-    
+
     assert test_function.__doc__ == "This is a test documentation"

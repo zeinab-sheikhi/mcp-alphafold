@@ -4,10 +4,10 @@ This tool retrieves all annotations for a specified UniProt residue range. It al
 
 ## Arguments
 
-- **`qualifier`** (`str`):  
+- **`qualifier`** (`str`):
   UniProt accession (e.g., `'Q5VSL9'`).
 
-- **`annotation_type`** (`str`):  
+- **`annotation_type`** (`str`):
   Type of annotation (e.g., `'MUTAGEN'` for AlphaMissense).
 
 ### Example Input:

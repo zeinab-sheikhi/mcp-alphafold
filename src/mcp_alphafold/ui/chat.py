@@ -1,6 +1,6 @@
 import streamlit as st
-from mcp_client import MCPClient
 import streamlit.components.v1 as components
+from mcp_client import MCPClient
 
 
 async def chat_ui(client: MCPClient):
@@ -8,8 +8,8 @@ async def chat_ui(client: MCPClient):
     st.write("Enter your query below to interact with the LLM and MCP tools.")
     st.title("Protein Viewer Bot")
 
-# --- Mock: simulate receiving .bcif URL from a backend tool call ---
-# In real usage, this would come from your MCP tool call result
+    # --- Mock: simulate receiving .bcif URL from a backend tool call ---
+    # In real usage, this would come from your MCP tool call result
     if "bcif_url" not in st.session_state:
         st.session_state["bcif_url"] = "https://alphafold.ebi.ac.uk/files/AF-Q01101-F1-model_v4.bcif"
 
@@ -53,6 +53,6 @@ async def chat_ui(client: MCPClient):
 
     #     response = await client.process_query(user_input)
     #     st.session_state.messages.append({"role": "assistant", "content": response})
-        
+
     #     with st.chat_message("assistant"):
     #         st.markdown(response)
