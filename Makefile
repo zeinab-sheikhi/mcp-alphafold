@@ -43,3 +43,6 @@ update-pre-commit:
 
 test:
 	uv run pytest tests/
+
+test-coverage:
+	uv run pytest --cov=mcp_alphafold --cov-report=term-missing

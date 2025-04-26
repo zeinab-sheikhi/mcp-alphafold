@@ -37,14 +37,8 @@ dev-dependencies = [
     "pytest-httpx",
     "pytest-asyncio",
     "pytest-mock",
+    "pytest-cov>=4.1.0",
 ]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = "test_*.py"
-python_functions = "test_*"
-asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "function"
 
 [tool.ruff]
 line-length = 120
@@ -63,3 +57,25 @@ lint.ignore = [
 [tool.ruff.format]
 indent-style = "space"
 quote-style = "double"
+
+[tool.pytest.ini_options]
+addopts = "--cov=mcp_alphafold --cov-report=term-missing"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+
+[tool.coverage.run]
+source = ["mcp_alphafold"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "pass",
+    "raise ImportError",
+]
