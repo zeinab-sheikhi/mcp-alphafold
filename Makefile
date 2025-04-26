@@ -1,4 +1,4 @@
-.PHONY: help run-server clean install install-uv build-docker run-docker
+.PHONY: help run-server clean install install-uv build-docker run-docker checks update-pre-commit
 
 UV_COMMAND := uv
 
@@ -37,3 +37,6 @@ run-docker:
 
 checks:
 	uv run pre-commit run --all-files
+
+update-pre-commit:
+	uv run pre-commit autoupdate
