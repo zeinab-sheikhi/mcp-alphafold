@@ -144,6 +144,8 @@ def test_generate_cache_key(method, url, params, expected_prefix):
 def mock_cache_dir(tmp_path, monkeypatch):
     """Create a temporary cache directory and patch user_cache_dir."""
     cache_dir = tmp_path / "cache"
+    # Create the directory if it doesn't exist
+    cache_dir.mkdir(parents=True, exist_ok=True)
     monkeypatch.setattr("mcp_alphafold.utils.http_util.user_cache_dir", lambda x: str(tmp_path))
     return cache_dir
 

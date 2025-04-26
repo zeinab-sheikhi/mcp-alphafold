@@ -40,3 +40,6 @@ checks:
 
 update-pre-commit:
 	uv run pre-commit autoupdate
+
+test:
+	uv run pytest tests/
