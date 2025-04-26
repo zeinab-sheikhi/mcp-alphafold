@@ -23,7 +23,7 @@ dependencies = [
 packages = ["src/mcp_alphafold"]
 
 [project.scripts]
-mcp-server-alphafold = "mcp_alphafold.main:main"
+mcp-server-alphafold = "mcp_alphafold.server.run_server:main"
 
 [tool.uv]
 dev-dependencies = [

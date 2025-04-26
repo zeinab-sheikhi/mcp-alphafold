@@ -1,7 +1,7 @@
 import json
 from typing import Any, Dict, List, Optional, Union
 
-from mcp_alphafold.tools.models import (
+from mcp_alphafold.server.tools.models import (
     AnnotationResponse,
     EntrySummaryResponse,
     UniprotSummaryResponse,

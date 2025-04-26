@@ -1,6 +1,6 @@
 import pytest
 
-from mcp_alphafold.mcp_server import (
+from mcp_alphafold.server.mcp_server import (
     alpha_fold_prediction_tool,
     annotations_tool,
     uniprot_summary_tool,

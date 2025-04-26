@@ -3,23 +3,23 @@ from typing import Any, Dict, List, Optional, Union
 from mcp.server.fastmcp import FastMCP
 from mcp.server.fastmcp.utilities.logging import get_logger
 
-from mcp_alphafold.settings import settings
-from mcp_alphafold.tools.alphafold import (
+from mcp_alphafold.server.tools.alphafold import (
     get_alpha_fold_prediction,
     get_annotations,
     get_uniprot_summary,
 )
-from mcp_alphafold.utils.tool_util import with_docstring
+from mcp_alphafold.server.tools.utils import with_docstring
+from mcp_alphafold.settings import settings
 
-logger = get_logger("httpx")
-logger.setLevel("WARN")
+httpx_logger = get_logger("httpx")
+httpx_logger.setLevel("WARN")
 
 logger = get_logger(__name__)
 logger.setLevel("INFO")
 
 
 alphafold_mcp = FastMCP(
-    name=settings.SERVR_NAME,
+    name=settings.SERVER_NAME,
     host=settings.SERVER_HOST,
     port=settings.SERVER_PORT,
 )

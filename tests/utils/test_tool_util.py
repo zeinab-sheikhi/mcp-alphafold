@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from mcp_alphafold.utils.tool_util import load_docstring, with_docstring
+from mcp_alphafold.server.tools.utils import load_docstring, with_docstring
 
 
 @pytest.fixture

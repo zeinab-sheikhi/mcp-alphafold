@@ -7,7 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # Server settings
-    SERVR_NAME: str = "AlphaFoldMCP"
+    SERVER_NAME: str = "AlphaFoldMCP"
     SERVER_HOST: str = "0.0.0.0"
     SERVER_PORT: int = 8050
 
