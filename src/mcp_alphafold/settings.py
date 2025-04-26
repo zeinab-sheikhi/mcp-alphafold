@@ -1,12 +1,8 @@
 """Configuration settings for AlphaFold MCP server."""
 
-import logging
 from typing import Optional
 
-from pydantic import Field
-from pydantic_settings import BaseSettings
-
-logger = logging.getLogger(__name__)
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -24,18 +20,20 @@ class Settings(BaseSettings):
     CACHE_DIR: Optional[str] = None
 
     # SSL/TLS settings
-    SSL_CERT_FILE: Optional[str] = Field(None, env="SSL_CERT_FILE")
-    SSL_KEY_FILE: Optional[str] = Field(None, env="SSL_KEY_FILE")
+    SSL_CERT_FILE: Optional[str] = None
+    SSL_KEY_FILE: Optional[str] = None
 
     # Logging
     LOG_LEVEL: str = "INFO"
 
     # AlphaFold API settings
-    ANTHROPIC_API_KEY: str
+    ANTHROPIC_API_KEY: Optional[str] = None
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="allow",
+    )
 
 
 settings = Settings()

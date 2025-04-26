@@ -1,4 +1,4 @@
-.PHONY: help run-server clean install install-uv build-docker run-docker checks update-pre-commit
+.PHONY: help run-server clean install install-uv build-docker run-docker checks update-pre-commit type
 
 UV_COMMAND := uv
 
@@ -40,6 +40,13 @@ checks:
 
 update-pre-commit:
 	uv run pre-commit autoupdate
+
+lint:
+	uv run ruff check --fix src tests
+	uv run ruff format --check src tests
+
+type:
+	uv run mypy src --install-types --non-interactive --show-traceback
 
 test:
 	uv run pytest tests/

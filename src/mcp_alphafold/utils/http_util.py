@@ -16,11 +16,11 @@ from typing import (
 )
 
 import httpx
-from diskcache import Cache
+from diskcache import Cache  # type: ignore[import-untyped]
 from platformdirs import user_cache_dir
 from pydantic import BaseModel
 
-from mcp_alphafold.config import settings
+from mcp_alphafold.settings import settings
 
 _cache: Optional[Cache] = None
 T = TypeVar("T", bound=BaseModel)
