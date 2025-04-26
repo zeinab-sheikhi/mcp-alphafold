@@ -15,8 +15,8 @@ dependencies = [
     "mcp>=1.6.0",
     "diskcache>=5.6.3",
     "platformdirs>=4.3.6",
-    "python-dotenv>=1.0.1",
     "streamlit>=1.44.1",
+    "pydantic-settings>=2.0.1",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -42,14 +42,15 @@ dev-dependencies = [
 
 [tool.ruff]
 line-length = 120
-lint.select = [
+[tool.ruff.lint]
+select = [
     "F",  # flake8 rules
     "E",  # pydocstyle error rules
     "W",  # pydocstyle warning rules
     "B",  # flake8-bugbear rules
     "I",  # isort rules
 ]
-lint.ignore = [
+ignore = [
     "E501",  # line-too-long
     "F841",  # Unused variable
 ]

@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional, Union
 from mcp.server.fastmcp import FastMCP
 from mcp.server.fastmcp.utilities.logging import get_logger
 
+from mcp_alphafold.config import settings
 from mcp_alphafold.tools.alphafold import (
     get_alpha_fold_prediction,
     get_annotations,
@@ -18,9 +19,9 @@ logger.setLevel("INFO")
 
 
 alphafold_mcp = FastMCP(
-    name="AlphaFoldMCP",
-    host="0.0.0.0",
-    port=8050,
+    name=settings.SERVR_NAME,
+    host=settings.SERVER_HOST,
+    port=settings.SERVER_PORT,
 )
 
 

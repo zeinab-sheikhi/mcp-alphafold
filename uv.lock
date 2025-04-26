@@ -17,7 +17,7 @@ dependencies = [
     { name = "mcp" },
     { name = "platformdirs" },
     { name = "pydantic" },
-    { name = "python-dotenv" },
+    { name = "pydantic-settings" },
     { name = "streamlit" },
 ]
 
@@ -43,7 +43,7 @@ requires-dist = [
     { name = "mcp", specifier = ">=1.6.0" },
     { name = "platformdirs", specifier = ">=4.3.6" },
     { name = "pydantic", specifier = ">=1.10" },
-    { name = "python-dotenv", specifier = ">=1.0.1" },
+    { name = "pydantic-settings", specifier = ">=2.0.1" },
     { name = "streamlit", specifier = ">=1.44.1" },
 ]
 

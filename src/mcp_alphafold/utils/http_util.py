@@ -4,15 +4,23 @@ import json
 import os
 from io import StringIO
 from ssl import PROTOCOL_TLS_CLIENT, SSLContext, TLSVersion
-from typing import Any, Dict, Literal, Optional, Tuple, Type, TypeVar, Union
+from typing import (
+    Any,
+    Dict,
+    Literal,
+    Optional,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
 
 import httpx
 from diskcache import Cache
-from dotenv import load_dotenv
 from platformdirs import user_cache_dir
 from pydantic import BaseModel
 
-load_dotenv()
+from mcp_alphafold.config import settings
 
 _cache: Optional[Cache] = None
 T = TypeVar("T", bound=BaseModel)
@@ -30,8 +38,8 @@ def get_ssl_context(
 ) -> SSLContext:
     """Create an SSLContext with the specified TLS version."""
 
-    cert_file_path = cert_file or os.getenv("SSL_CERT_FILE")
-    key_file_path = key_file or os.getenv("SSL_KEY_FILE")
+    cert_file_path = cert_file or settings.SSL_CERT_FILE
+    key_file_path = key_file or settings.SSL_KEY_FILE
 
     if not cert_file_path:
         raise ValueError("Certificate file path not provided and SSL_CERT_FILE environment variable not set")
@@ -56,7 +64,10 @@ def get_cache() -> Cache:
     """Initialize and return the cache."""
     global _cache
     if _cache is None:
-        cache_path = os.path.join(user_cache_dir("alphafold-mcp"), "cache")
+        cache_path = os.path.join(
+            settings.CACHE_DIR or user_cache_dir("alphafold-mcp"),
+            "cache",
+        )
         _cache = Cache(cache_path)
     return _cache
 
@@ -92,10 +103,16 @@ async def call_http(
     url: str,
     params: Optional[Dict[str, Any]] = None,
     verify: Union[SSLContext, str, bool] = False,
+    timeout: Optional[int] = None,
 ) -> Tuple[int, str]:
     """Perform an HTTP request(GET/POST)."""
+    timeout = timeout or settings.REQUEST_TIMEOUT
     try:
-        async with httpx.AsyncClient(verify=verify, http2=False) as client:
+        async with httpx.AsyncClient(
+            verify=verify,
+            http2=False,
+            timeout=timeout,
+        ) as client:
             if method.upper() == "GET":
                 resp = await client.get(url, params=params)
             elif method.upper() == "POST":
@@ -113,11 +130,12 @@ async def request_api(
     request: Optional[Union[BaseModel, Dict]] = None,
     response_model_type: Optional[Type[T]] = None,
     method: Literal["GET", "POST"] = "GET",
-    cache_ttl: int = 86400,
+    cache_ttl: Optional[int] = None,
     tls_version: Optional[TLSVersion] = TLSVersion.TLSv1_3,
 ) -> Tuple[Optional[T], Optional[RequestError]]:
     """Request API with caching logic"""
 
+    cache_ttl = cache_ttl or settings.CACHE_TTL
     verify: Union[SSLContext, str, bool] = False
     if tls_version:
         ssl_context = get_ssl_context(tls_version=tls_version)
