@@ -1,19 +1,13 @@
+import asyncio
 import csv
 import hashlib
 import json
+import logging
 import os
+import random
 from io import StringIO
 from ssl import PROTOCOL_TLS_CLIENT, SSLContext, TLSVersion
-from typing import (
-    Any,
-    Dict,
-    Literal,
-    Optional,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-)
+from typing import Any, Dict, Literal, Optional, Tuple, Type, TypeVar, Union
 
 import httpx
 from diskcache import Cache  # type: ignore[import-untyped]
@@ -22,6 +16,7 @@ from pydantic import BaseModel
 
 from mcp_alphafold.settings import settings
 
+logger = logging.getLogger(__name__)
 _cache: Optional[Cache] = None
 T = TypeVar("T", bound=BaseModel)
 
@@ -31,6 +26,9 @@ class RequestError(BaseModel):
     message: str
 
 
+# --------------------------------
+# SSL CONFIGURATION
+# --------------------------------
 def get_ssl_context(
     cert_file: Optional[str] = None,
     key_file: Optional[str] = None,
@@ -56,10 +54,13 @@ def get_ssl_context(
     context.maximum_version = tls_version
     context.minimum_version = tls_version
     context.load_verify_locations(cafile=cert_file_path)
-    context.check_hostname = False  # disable for testing purposes
+    context.check_hostname = False  # disable for testing purposes; enable in production
     return context
 
 
+# --------------------------------
+# CACHING
+# --------------------------------
 def get_cache() -> Cache:
     """Initialize and return the cache."""
     global _cache
@@ -88,91 +89,117 @@ def generate_cache_key(
 
 def get_cache_response(cache_key: str) -> Optional[str]:
     """Retrieve the cache response if avialable."""
-    cache = get_cache()
-    return cache.get(cache_key)
+    return get_cache().get(cache_key)
 
 
 def cache_response(cache_key: str, content: str, cache_ttl: int) -> None:
     """Store the response content in cache."""
-    cache = get_cache()
-    cache.set(cache_key, content, expire=cache_ttl)
+    get_cache().set(cache_key, content, expire=cache_ttl)
 
 
+# --------------------------------
+# HTTP REQUEST
+# --------------------------------
 async def call_http(
     method: str,
     url: str,
     params: Optional[Dict[str, Any]] = None,
     verify: Union[SSLContext, str, bool] = False,
     timeout: Optional[int] = None,
+    retries: int = 3,
+    backoff_factor: float = 0.5,
+    rate_limit_delay: Optional[float] = None,
 ) -> Tuple[int, str]:
-    """Perform an HTTP request(GET/POST)."""
+    """Perform an HTTP request(GET/POST) with retries and optional rate limit."""
     timeout = timeout or settings.REQUEST_TIMEOUT
-    try:
-        async with httpx.AsyncClient(
-            verify=verify,
-            http2=False,
-            timeout=timeout,
-        ) as client:
-            if method.upper() == "GET":
-                resp = await client.get(url, params=params)
-            elif method.upper() == "POST":
-                resp = await client.post(url, json=params or {})
+
+    if rate_limit_delay:
+        await asyncio.sleep(rate_limit_delay)
+
+    last_error: Optional[Exception] = None
+    for attempt in range(retries + 1):
+        try:
+            async with httpx.AsyncClient(
+                verify=verify,
+                http2=False,
+                timeout=timeout,
+            ) as client:
+                if method.upper() == "GET":
+                    resp = await client.get(url, params=params)
+                elif method.upper() == "POST":
+                    resp = await client.post(url, json=params or {})
+                else:
+                    logger.error(f"Unsupported HTTP method: {method}")
+                    return 405, f"Unsupported Method: {method}"
+
+                resp.raise_for_status()
+                return resp.status_code, resp.text
+
+        except (httpx.RequestError, httpx.TimeoutException) as e:
+            last_error = e
+            if attempt < retries:  # Not the last attempt
+                backoff = backoff_factor * (2**attempt) + random.uniform(0, 0.1)
+                logger.warning(f"Request failed (attempt {attempt + 1}/{retries + 1}): {str(e)}")
+                await asyncio.sleep(backoff)
             else:
-                return 405, f"Unsupported Mehtod: {method}"
-            return resp.status_code, resp.text
+                logger.error(f"Request failed after {retries + 1} attempts: {str(e)}")
 
-    except httpx.HTTPError as e:
-        return 599, str(e)
+    return 599, f"All retry attempts failed: {str(last_error)}"
 
 
+# --------------------------------
+# HIGH LEVEL REQUEST API
+# --------------------------------
 async def request_api(
     url: str,
     request: Optional[Union[BaseModel, Dict]] = None,
     response_model_type: Optional[Type[T]] = None,
     method: Literal["GET", "POST"] = "GET",
     cache_ttl: Optional[int] = None,
-    tls_version: Optional[TLSVersion] = TLSVersion.TLSv1_3,
+    ssl_context: Optional[SSLContext] = None,
+    retries: int = 3,
+    rate_limit_delay: Optional[float] = None,
 ) -> Tuple[Optional[T], Optional[RequestError]]:
-    """Request API with caching logic"""
+    """Main method for API request with SSL, cache, retry, and parsing."""
 
     cache_ttl = cache_ttl or settings.CACHE_TTL
-    verify: Union[SSLContext, str, bool] = False
-    if tls_version:
-        ssl_context = get_ssl_context(tls_version=tls_version)
-        verify = ssl_context
-
     params: Optional[Dict[str, Any]] = None
 
-    # convert request to param dict
+    # Build request params
     if request is not None:
         if isinstance(request, BaseModel):
             params = request.model_dump(exclude_none=True, by_alias=True)
         else:
             params = request
 
-    # Short-Circuit if caching is not enabled
+    verify: Union[SSLContext, str, bool] = ssl_context if ssl_context else False
+
+    # No cache: always make the request
     if cache_ttl == 0:
         status, content = await call_http(
             method=method,
             url=url,
             params=params,
             verify=verify,
+            retries=retries,
+            rate_limit_delay=rate_limit_delay,
         )
         return parse_response(status, content, response_model_type)
 
-    # caching enable
+    # Handle caching
     cache_key = generate_cache_key(method=method, url=url, params=params)
     cached_content = get_cache_response(cache_key=cache_key)
-
     if cached_content:
         return parse_response(200, cached_content, response_model_type)
 
-    # Make HTTP request if not cached
+    # Not cached, make HTTP request
     status, content = await call_http(
         method=method,
         url=url,
         params=params,
         verify=verify,
+        retries=retries,
+        rate_limit_delay=rate_limit_delay,
     )
     parsed_response = parse_response(status, content, response_model_type)
 
@@ -182,12 +209,15 @@ async def request_api(
     return parsed_response
 
 
+# --------------------------------
+# RESPONSE PARSING
+# --------------------------------
 def parse_response(
     status_code: int,
     content: str,
     response_model_type: Optional[Type[T]] = None,
 ) -> Tuple[Optional[T], Optional[RequestError]]:
-    """Parse the HTTP response based on the status code"""
+    """Parse the HTTP response based on the content type."""
     if status_code != 200:
         return None, RequestError(code=status_code, message=content)
     try:
@@ -200,7 +230,8 @@ def parse_response(
             else:
                 response_dict = {"text": content}
             return response_dict, None
-        parsed: T = response_model_type.model_validate_json(content)
-        return parsed, None
+        return response_model_type.model_validate_json(content), None
+
     except Exception as e:
+        logger.exception("Error parsing HTTP response")
         return None, RequestError(code=500, message=str(e))

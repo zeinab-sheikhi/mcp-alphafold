@@ -31,7 +31,6 @@ async def get_alpha_fold_prediction(
     response, error = await request_api(
         url=url,
         method="GET",
-        tls_version=None,
         response_model_type=EntrySummaryResponse,
     )
     data: Union[List[Any], Dict[str, Any]]  # Add type annotation for data
@@ -64,7 +63,6 @@ async def get_uniprot_summary(
         url=url,
         method="GET",
         response_model_type=UniprotSummaryResponse,
-        tls_version=None,
     )
 
     if response:
@@ -97,7 +95,6 @@ async def get_annotations(
         url=url,
         method="GET",
         response_model_type=AnnotationResponse,
-        tls_version=None,
     )
     if response:
         data = response.model_dump_json(exclude_none=True)

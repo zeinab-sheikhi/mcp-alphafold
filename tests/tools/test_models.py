@@ -1,6 +1,6 @@
 import pytest
 
-from mcp_alphafold.tools.models import (
+from mcp_alphafold.server.tools.models import (
     Annotation,
     AnnotationResponse,
     AnnotationType,
