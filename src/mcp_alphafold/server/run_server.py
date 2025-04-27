@@ -17,10 +17,10 @@ def main():
 
     # Import is done here to make sure environment variables are loaded
     # only after we make the changes.
-    from mcp_alphafold.server.mcp_server import server
+    from mcp_alphafold.server.mcp_server import app
 
     logger.info(f"Starting server with {args.transport} transport mode")
-    server.run(transport=args.transport)
+    app.run(transport=args.transport)
 
 
 if __name__ == "__main__":

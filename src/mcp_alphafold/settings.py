@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     # Server settings
     SERVER_NAME: str = "AlphaFoldMCP"
     SERVER_HOST: str = "0.0.0.0"
-    SERVER_PORT: int = 8050
+    SERVER_PORT: int = 8000
 
     # API settings
     MAX_RETIRES: int = 3

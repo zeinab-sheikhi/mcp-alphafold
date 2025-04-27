@@ -11,7 +11,7 @@ Built with FastMCP and Python, it offers tools for protein structure predictions
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/mcp-alphafold.git
+git clone https://github.com/zeinab-sheikhi/mcp-alphafold.git
 cd mcp-alphafold
 ```
 

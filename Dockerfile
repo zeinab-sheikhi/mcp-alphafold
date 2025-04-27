@@ -1,12 +1,10 @@
-FROM python:3.11-slim
+# Use a Python image with uv pre-installed
+FROM ghcr.io/astral-sh/uv:python3.13-slim
 
 WORKDIR /app
 
 COPY pyproject.toml uv.lock README.md ./
 COPY src/ ./src
-
-# install uv
-RUN pip install --no-cache-dir uv
 
 ENV PATH="/root/.local/bin:/app/.venv/bin:$PATH"
 

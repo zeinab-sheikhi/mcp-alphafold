@@ -5,7 +5,8 @@ from pathlib import Path
 
 def load_docstring(file_name: str) -> str:
     """Load the docstring from the markdown file."""
-    docs_path = Path(__file__).parent.parent / "docs" / file_name
+    docs_path = Path(__file__).parent.parent.parent / "docs" / file_name
+    print(docs_path)
     try:
         with open(docs_path, "r") as file:
             return file.read()
