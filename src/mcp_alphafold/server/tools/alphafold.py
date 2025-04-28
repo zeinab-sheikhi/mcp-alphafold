@@ -1,17 +1,33 @@
 import json
 from typing import Any, Dict, List, Optional, Union
 
+from mcp.server.fastmcp import FastMCP
+
 from mcp_alphafold.server.tools.models import (
     AnnotationResponse,
     EntrySummaryResponse,
     UniprotSummaryResponse,
 )
 from mcp_alphafold.utils.http_util import request_api
+from mcp_alphafold.server.tools.utils import with_docstring
+
 
 BASE_URL = "https://alphafold.ebi.ac.uk/api"
 
 
-async def get_alpha_fold_prediction(
+def alphafold_tools(mcp: FastMCP):
+    """Add AlphaFold tools to the MCP server."""
+    tools = [
+        get_alphafold_prediction, 
+        get_uniprot_summary,
+        get_annotations,
+    ]
+    for tool in tools:
+        mcp.add_tool(tool)
+
+
+@with_docstring("alphafold_prediction.md")
+async def get_alphafold_prediction(
     qualifier: str,
     sequence_checksum: Optional[str] = None,
     output_json: bool = True,
@@ -43,6 +59,7 @@ async def get_alpha_fold_prediction(
     return json.dumps(data) if output_json else data  # type: ignore
 
 
+@with_docstring("uniprot_summary.md")
 async def get_uniprot_summary(
     qualifier: str,
     output_json: bool = True,
@@ -74,6 +91,7 @@ async def get_uniprot_summary(
     return json.dumps(data) if output_json else data
 
 
+@with_docstring("uniprot_annotations.md")
 async def get_annotations(
     qualifier: str,
     annotation_type: str = "MUTAGEN",
