@@ -18,8 +18,9 @@ def main():
 
     # Import is done here to make sure environment variables are loaded
     # only after we make the changes.
-    from mcp_alphafold.server.mcp_server import alphafold_mcp
+    from mcp_alphafold.server.mcp_server import create_server
 
+    alphafold_mcp = create_server()
     alphafold_mcp.run(transport=args.transport)
 
 
