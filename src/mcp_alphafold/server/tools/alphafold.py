@@ -8,9 +8,8 @@ from mcp_alphafold.server.tools.models import (
     EntrySummaryResponse,
     UniprotSummaryResponse,
 )
-from mcp_alphafold.utils.http_util import request_api
 from mcp_alphafold.server.tools.utils import with_docstring
-
+from mcp_alphafold.utils.http_util import request_api
 
 BASE_URL = "https://alphafold.ebi.ac.uk/api"
 
@@ -18,7 +17,7 @@ BASE_URL = "https://alphafold.ebi.ac.uk/api"
 def alphafold_tools(mcp: FastMCP):
     """Add AlphaFold tools to the MCP server."""
     tools = [
-        get_alphafold_prediction, 
+        get_alphafold_prediction,
         get_uniprot_summary,
         get_annotations,
     ]

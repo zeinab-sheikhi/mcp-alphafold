@@ -1,5 +1,3 @@
-# `uniprot_summary_tool`
-
 This tool fetches AlphaFold model predictions for a given UniProt residue range. The tool takes in a UniProt accession number (AC), entry name (ID), or CRC64 checksum and returns detailed information about the structure models available for the specified sequence range.
 
 ## Arguments

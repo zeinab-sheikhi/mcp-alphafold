@@ -1,5 +1,3 @@
-# `alpha_fold_prediction_tool`
-
 This tool retrieves all available AlphaFold models for a specified UniProt accession. It allows querying by the UniProt accession or by the CRC64 checksum of the UniProt sequence.
 
 ## Arguments

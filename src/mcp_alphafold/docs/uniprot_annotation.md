@@ -1,5 +1,3 @@
-# `annotations_tool`
-
 This tool retrieves all annotations for a specified UniProt residue range. It allows querying by the UniProt accession and the annotation type (e.g., MUTAGEN for AlphaMissense).
 
 ## Arguments

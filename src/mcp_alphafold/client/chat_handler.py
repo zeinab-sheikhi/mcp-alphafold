@@ -2,7 +2,7 @@
 # from datetime import datetime
 # from typing import Any, Optional
 
-# from .base import BaseMCPClient
+# from mcp_alphafold.client.base import BaseMCPClient
 
 
 # class ChatHandler:

@@ -13,5 +13,5 @@ def create_server() -> FastMCP:
     )
 
     alphafold_tools(mcp=mcp_server)
-    
+
     return mcp_server
