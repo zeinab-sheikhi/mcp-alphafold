@@ -6,7 +6,7 @@ from mcp_alphafold.client.mcp_client import MCPClient
 logger = logging.getLogger(__name__)
 
 
-async def main():
+async def run():
     # Create a stdio client
     client = MCPClient.stdio(
         command="python",
@@ -33,10 +33,14 @@ async def main():
         await client.cleanup()
 
 
-if __name__ == "__main__":
+def main():
     try:
-        asyncio.run(main())
+        asyncio.run(run())
     except KeyboardInterrupt:
         logger.error("\nScript interrupted by user")
     except Exception as e:
         logger.error(f"Script error: {e}")
+
+
+if __name__ == "__main__":
+    main()
