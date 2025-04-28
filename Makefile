@@ -10,18 +10,8 @@ help:
 run-server:
 	uv run python src/mcp_alphafold/mcp_server.py
 
-clean:
-	find . -type d -name "__pycache__" -exec rm -rf {} +
-	find . -type f -name "*.pyc" -delete
-	find . -type d -name ".pytest_cache" -exec rm -rf {} +
-	find . -type d -name ".uv" -exec rm -rf {} +
-	rm -rf .mypy_cache
-	rm -rf .ruff_cache
-	rm -rf .cache
-	rm -rf .env
-	rm -rf .env.local
-	rm -rf .env.development.local
-	rm -rf .env.test.local
+run-client:
+	uv run python src/mcp_alphafold/client/run_client.py
 
 install-uv:
 	@which $(UV_COMMAND) >/dev/null 2>&1 || (echo "Could not find 'uv'! Installing..."; curl -LsSf https://astral.sh/uv/install.sh | sh)
@@ -30,10 +20,10 @@ install: install-uv
 	uv sync --all-extras
 
 build-docker:
-	docker build -t mcp-alphafold .
+	docker build --no-cache -t mcp-alphafold .
 
 run-docker:
-	docker run -p 8050:8050 mcp-alphafold
+	docker run -it mcp-alphafold /bin/bash
 
 checks:
 	uv run pre-commit run --all-files
@@ -53,3 +43,16 @@ test:
 
 test-coverage:
 	uv run pytest --cov=mcp_alphafold --cov-report=term-missing
+
+clean:
+	find . -type d -name "__pycache__" -exec rm -rf {} +
+	find . -type f -name "*.pyc" -delete
+	find . -type d -name ".pytest_cache" -exec rm -rf {} +
+	find . -type d -name ".uv" -exec rm -rf {} +
+	rm -rf .mypy_cache
+	rm -rf .ruff_cache
+	rm -rf .cache
+	rm -rf .env
+	rm -rf .env.local
+	rm -rf .env.development.local
+	rm -rf .env.test.local
