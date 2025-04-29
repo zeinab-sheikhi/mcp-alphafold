@@ -23,16 +23,4 @@ ADD . /app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
-FROM python:3.11-slim-bookworm
-
-WORKDIR /app
-
-COPY --from=uv --chown=app:app /app/.venv /app/.venv
-
-# Place executables in the environment at the front of the path
-ENV PATH="/app/.venv/bin:$PATH"
-
-# Expose the port the server runs on
-EXPOSE 8000
-
 ENTRYPOINT ["uv", "--directory", "/app", "run", "run-server"]
