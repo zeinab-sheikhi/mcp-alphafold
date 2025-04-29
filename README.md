@@ -1,24 +1,12 @@
 # MCP-AlphaFold
 
 A Model Context Protocol (MCP) server that provides programmatic access to AlphaFold predictions and UniProt data.
-Built with FastMCP and Python, it offers tools for protein structure predictions, UniProt summaries, and protein annotations in a containerized environment.
+Built with FastMCP and Python, it offers tools for protein structure predictions, UniProt summaries, and protein annotations.
 
 ## Requirements
 - Python ≥ 3.11
-- UV package manager
+- uv package manager
 
-## Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/zeinab-sheikhi/mcp-alphafold.git
-cd mcp-alphafold
-```
-
-2. Install dependencies using uv:
-```bash
-make install
-```
 
 ### ⚙️ Configuration
 
@@ -55,36 +43,59 @@ Add the server to your `claude_desktop_config.json` with configuration of:
 }
 ```
 
-## Available Tools
+### 🔧 Tools
 
-### 1. AlphaFold Prediction Tool
-Retrieves protein structure predictions using AlphaFold. Input a protein identifier or sequence checksum to get structural predictions.
+The server offers these core tools:
 
-Example usage:
-```python
-prediction = await alpha_fold_prediction_tool(
-    qualifier="P12345",
-    sequence_checksum="optional_checksum"
-)
+#### 🧬 AlphaFold Tools
+- `alphafold_prediction`
+    - Retrieves protein structure predictions using AlphaFold. Input a protein identifier or sequence checksum to get structural predictions.
+
+- `uniprot_summary`
+    - Fetches comprehensive protein summaries from UniProt database, including protein function, domains, and other key characteristics.
+
+- `annotations`
+    - Retrieves specific protein annotations including mutations, modifications, and other experimental data. Default annotation type is "MUTAGEN".
+
+
+## 🚀 Development
+
+### 📦 Prerequisites
+
+1. Install `uv` (Universal Virtualenv):
+```bash
+# Using pip
+pip install uv
+
+# Using Homebrew on macOS
+brew install uv
+
+# Using cargo (Rust package manager)
+cargo install uv
 ```
 
-### 2. UniProt Summary Tool
-Fetches comprehensive protein summaries from UniProt database, including protein function, domains, and other key characteristics.
+2. Clone the repository and set up development environment:
+```bash
+# Clone the repository
+git clone https://github.com/zeinab-sheikhi/mcp-alphafold.git
+cd mcp-alphafold
 
-Example usage:
-```python
-summary = await uniprot_summary_tool(
-    qualifier="P12345"
-)
+# Create and activate virtual environment using uv
+uv venv
+source .venv/bin/activate  # On Unix/macOS
+.venv\Scripts\activate     # On Windows
+
+# Install dependencies including dev dependencies
+make install
 ```
 
-### 3. Annotations Tool
-Retrieves specific protein annotations including mutations, modifications, and other experimental data. Default annotation type is "MUTAGEN".
+### 🐳 Docker
 
-Example usage:
-```python
-annotations = await annotations_tool(
-    qualifier="P12345",
-    annotation_type="MUTAGEN"
-)
+Build and run the Docker container:
+
+```bash
+# Build the image
+make build-docker
+# Run the container
+make run-docker
 ```
