@@ -15,20 +15,45 @@ git clone https://github.com/zeinab-sheikhi/mcp-alphafold.git
 cd mcp-alphafold
 ```
 
-2. Install dependencies using UV:
+2. Install dependencies using uv:
 ```bash
 make install
 ```
 
-## Running the Server
+### ⚙️ Configuration
 
-Start the MCP server using:
-```bash
-make run-server
+Add the server to your `claude_desktop_config.json` with configuration of:
+
+```json
+{
+  "mcpServers": {
+    "mcp_alphafold": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/path/to/mcp-alphafold",
+        "run",
+        "mcp-alphafold"
+      ],
+    }
+  }
+}
 ```
+### 🐳 Using with Docker
 
-The server will start on `http://localhost:8000`.
-
+```json
+"mcpServers": {
+  "mcp_alphafold": {
+    "command": "docker",
+    "args": [
+      "run",
+      "--rm",
+      "-p", "8050:8050",
+      "zeinabsheikhi/mcp-alphafold:0.1.0"
+    ]
+  }
+}
+```
 
 ## Available Tools
 
