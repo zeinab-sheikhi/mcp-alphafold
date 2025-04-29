@@ -8,10 +8,7 @@ help:
 	@echo "  make clean   - Clean up cache files"
 
 run-server:
-	uv run python src/mcp_alphafold/mcp_server.py
-
-run-client:
-	uv run python src/mcp_alphafold/client/run_client.py
+	alphafold-mcp
 
 install-uv:
 	@which $(UV_COMMAND) >/dev/null 2>&1 || (echo "Could not find 'uv'! Installing..."; curl -LsSf https://astral.sh/uv/install.sh | sh)
@@ -23,7 +20,7 @@ build-docker:
 	docker build --no-cache -t mcp-alphafold .
 
 run-docker:
-	docker run -it mcp-alphafold
+	docker run -it alphafold-mcp
 
 checks:
 	uv run pre-commit run --all-files

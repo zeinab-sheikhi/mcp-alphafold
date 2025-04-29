@@ -9,12 +9,13 @@ ENV UV_COMPILE_BYTECODE=1
 # Copy from the cache instead of linking since it's a mounted volume
 ENV UV_LINK_MODE=copy
 
+
 # Install dependencies
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=README.md,target=README.md \
-    uv sync --frozen --no-install-project --no-dev
+    uv sync --frozen --no-install-project --no-dev --no-editable
 
 
 # Then, add the rest of the project source code and install it
@@ -23,16 +24,7 @@ ADD . /app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
-FROM python:3.11-slim-bookworm
-
-WORKDIR /app
-
-COPY --from=uv --chown=app:app /app/.venv /app/.venv
-
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Expose the port the server runs on
-EXPOSE 8000
-
-ENTRYPOINT ["uv", "--directory", "/app", "run", "run-server"]
+ENTRYPOINT ["alphafold-mcp"]

@@ -3,13 +3,13 @@ from typing import Any, Dict, List, Optional, Union
 
 from mcp.server.fastmcp import FastMCP
 
-from mcp_alphafold.server.tools.models import (
+from mcp_alphafold.tools.models import (
     AnnotationResponse,
     EntrySummaryResponse,
     UniprotSummaryResponse,
 )
-from mcp_alphafold.server.tools.utils import with_docstring
-from mcp_alphafold.utils.http_util import request_api
+from mcp_alphafold.utils.doc import with_docstring
+from mcp_alphafold.utils.http import request_api
 
 BASE_URL = "https://alphafold.ebi.ac.uk/api"
 
