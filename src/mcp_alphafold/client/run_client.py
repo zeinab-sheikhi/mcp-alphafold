@@ -3,16 +3,18 @@ import logging
 
 from mcp_alphafold.client.mcp_client import MCPClient
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
+
 
 async def run_client():
     client = MCPClient.stdio(
         command="python",
-        args=["/Users/zsheikhitarghi/projects/mcp-alphafold/src/mcp_alphafold/server/run_server.py", "--transport", "stdio"],
+        args=[
+            "/Users/zsheikhitarghi/projects/mcp-alphafold/src/mcp_alphafold/server/run_server.py",
+            "--transport",
+            "stdio",
+        ],
     )
 
     try:
@@ -34,6 +36,7 @@ async def run_client():
     finally:
         await client.cleanup()
 
+
 def main():
     try:
         asyncio.run(run_client())
@@ -41,6 +44,7 @@ def main():
         logger.error("Script interrupted by user")
     except Exception as e:
         logger.error(f"Script error: {e}")
+
 
 if __name__ == "__main__":
     main()
