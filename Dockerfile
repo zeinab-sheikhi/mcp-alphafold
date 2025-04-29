@@ -3,24 +3,31 @@ FROM ghcr.io/astral-sh/uv:python3.11-bookworm-slim AS uv
 
 WORKDIR /app
 
+# Enable bytecode compilation
+ENV UV_COMPILE_BYTECODE=1
+
+# Copy from the cache instead of linking since it's a mounted volume
+ENV UV_LINK_MODE=copy
+
 # Install dependencies
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=README.md,target=README.md \
-    uv sync --locked
-
-COPY pyproject.toml uv.lock README.md ./
-COPY src/ /app
+    uv sync --frozen --no-install-project --no-dev
 
 
-# Sync the project
+# Then, add the rest of the project source code and install it
+# Installing separately from its dependencies allows optimal layer caching
+ADD . /app
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv pip install -e .
+    uv sync --frozen --no-dev
 
-# Compiling Python source files to bytecode
-ENV UV_COMPILE_BYTECODE=1
-ENV PATH="/root/.local/bin:/app/.venv/bin:$PATH"
+# Place executables in the environment at the front of the path
+ENV PATH="/app/.venv/bin:$PATH"
+
+# Reset the entrypoint, don't invoke `uv`
+ENTRYPOINT []
 
 # Expose the port the server runs on
 EXPOSE 8000
