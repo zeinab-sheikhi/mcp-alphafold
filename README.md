@@ -27,18 +27,8 @@ Start the MCP server using:
 make run-server
 ```
 
-The server will start on `http://localhost:8050`.
+The server will start on `http://localhost:8000`.
 
-## Docker Support
-
-Build and run using Docker:
-```bash
-# Build the image
-docker build -t mcp-alphafold .
-
-# Run the container
-docker run -p 8050:8050 mcp-alphafold
-```
 
 ## Available Tools
 

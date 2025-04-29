@@ -1,5 +1,5 @@
 [project]
-name = "alphafold-mcp"
+name = "mcp-alphafold"
 version = "0.1.0"
 description = "AlphaFold MCP server"
 authors = [
@@ -36,12 +36,10 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project.scripts]
-alphafold-mcp = "mcp_alphafold.cli:main"
-
+mcp-alphafold = "mcp_alphafold.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/mcp_alphafold"]
-
 
 [tool.ruff]
 line-length = 120

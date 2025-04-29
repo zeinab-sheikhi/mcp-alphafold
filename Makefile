@@ -8,7 +8,7 @@ help:
 	@echo "  make clean   - Clean up cache files"
 
 run-server:
-	alphafold-mcp
+	mcp-alphafold
 
 install-uv:
 	@which $(UV_COMMAND) >/dev/null 2>&1 || (echo "Could not find 'uv'! Installing..."; curl -LsSf https://astral.sh/uv/install.sh | sh)
