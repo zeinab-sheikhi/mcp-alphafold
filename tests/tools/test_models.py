@@ -1,6 +1,6 @@
 import pytest
 
-from mcp_alphafold.server.tools.models import (
+from mcp_alphafold.tools.models import (
     Annotation,
     AnnotationResponse,
     AnnotationType,
@@ -11,7 +11,7 @@ from mcp_alphafold.server.tools.models import (
     Region,
     UniprotEntry,
 )
-from mcp_alphafold.utils.http_util import RequestError
+from mcp_alphafold.utils.http import RequestError
 
 
 def test_entry_summary_model():
