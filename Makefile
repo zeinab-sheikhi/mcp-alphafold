@@ -20,7 +20,7 @@ build-docker:
 	docker build --no-cache -t mcp-alphafold .
 
 run-docker:
-	docker run -it alphafold-mcp
+	docker run -it mcp-alphafold
 
 checks:
 	uv run pre-commit run --all-files
