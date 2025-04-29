@@ -28,8 +28,16 @@ class AlphaFoldMCP:
         self._shutdown_requested = False
 
     def _register_tools(self) -> None:
-        """Register all AlphaFold tools with the MCP server."""
+        """Register tools with the MCP server."""
         alphafold_tools(mcp=self.app)
+
+    def _register_prompts(self) -> None:
+        """Register prompts with the MCP server."""
+        pass
+
+    def _register_resources(self) -> None:
+        """Register resources with the MCP server."""
+        pass
 
     def _handle_shutdown(self, signum: int, frame) -> None:
         """Handle shutdown signals gracefully.
