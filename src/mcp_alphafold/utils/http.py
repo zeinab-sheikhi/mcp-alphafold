@@ -132,7 +132,6 @@ async def call_http(
                     logger.error(f"Unsupported HTTP method: {method}")
                     return 405, f"Unsupported Method: {method}"
 
-                resp.raise_for_status()
                 return resp.status_code, resp.text
 
         except (httpx.RequestError, httpx.TimeoutException) as e:
