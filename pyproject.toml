@@ -43,6 +43,29 @@ packages = ["src/mcp_alphafold"]
 
 [tool.ruff]
 line-length = 120
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
 [tool.ruff.lint]
 select = [
     "F",  # flake8 rules
@@ -60,12 +83,15 @@ ignore = [
 indent-style = "space"
 quote-style = "double"
 
+[tool.ruff.lint.isort]
+known-first-party = ["mcp_alphafold"]
+lines-after-imports = 2
+
 [tool.pytest.ini_options]
 addopts = "--cov=mcp_alphafold --cov-report=term-missing"
 testpaths = ["tests"]
 asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "function"
-
+asyncio_default_fixture_loop_scope = "session"
 
 [tool.coverage.run]
 source = ["mcp_alphafold"]
