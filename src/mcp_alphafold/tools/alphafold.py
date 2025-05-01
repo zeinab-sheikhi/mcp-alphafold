@@ -30,7 +30,7 @@ async def get_alphafold_prediction(
     qualifier: str,
     sequence_checksum: Optional[str] = None,
     output_json: bool = True,
-) -> Union[str, Dict[str, Any]]:  # type: ignore[return-value]
+) -> Union[str, Dict[str, Any]]:
     """
     Get all AlphaFold models for a UniProt accession.
     Args:

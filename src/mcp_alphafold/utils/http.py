@@ -10,7 +10,7 @@ from ssl import PROTOCOL_TLS_CLIENT, SSLContext, TLSVersion
 from typing import Any, Dict, Literal, Optional, Tuple, Type, TypeVar, Union
 
 import httpx
-from diskcache import Cache  # type: ignore[import-untyped]
+from diskcache import Cache
 from platformdirs import user_cache_dir
 from pydantic import BaseModel
 
