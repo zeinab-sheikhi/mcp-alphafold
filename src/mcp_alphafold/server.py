@@ -77,5 +77,5 @@ class AlphaFoldMCP:
         with self._setup_signal_handlers():
             try:
                 self.app.run(transport=transport)
-            except Exception as e:
+            except Exception:
                 sys.exit(1)
