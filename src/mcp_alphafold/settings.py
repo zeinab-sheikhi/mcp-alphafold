@@ -1,6 +1,6 @@
 """Configuration settings for AlphaFold MCP server."""
 
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     SERVER_NAME: str = "AlphaFoldMCP"
     SERVER_HOST: str = "0.0.0.0"
     SERVER_PORT: int = 8000
+    TRANSPORT: Literal["stdio", "sse"] = "sse"
 
     # API settings
     MAX_RETIRES: int = 3

@@ -2,7 +2,7 @@ import logging
 import signal
 import sys
 from contextlib import contextmanager
-from typing import Generator, Literal
+from typing import Generator, Literal, cast
 
 from mcp.server.fastmcp import FastMCP
 
@@ -68,7 +68,7 @@ class AlphaFoldMCP:
             signal.signal(signal.SIGINT, previous_sigint)
             signal.signal(signal.SIGTERM, previous_sigterm)
 
-    def run(self, transport: Literal["stdio", "sse"] = "sse") -> None:
+    def run(self, transport: str = "sse") -> None:
         """Run the AlphaFold MCP server.
 
         Args:
@@ -76,6 +76,6 @@ class AlphaFoldMCP:
         """
         with self._setup_signal_handlers():
             try:
-                self.app.run(transport=transport)
+                self.app.run(transport=cast(Literal["stdio", "sse"], transport))
             except Exception:
                 sys.exit(1)
