@@ -22,6 +22,9 @@ build-docker:
 run-docker:
 	docker run -it mcp-alphafold
 
+run-docker-compose:
+	docker compose up --build
+
 checks:
 	uv run pre-commit run --all-files
 

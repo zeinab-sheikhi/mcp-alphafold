@@ -26,5 +26,10 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
+ENV MCP_HOST=0.0.0.0
+ENV MCP_PORT=8000
+ENV MCP_TRANSPORT=sse
 
-ENTRYPOINT ["mcp-alphafold"]
+EXPOSE 8000
+
+CMD ["sh", "-c", "mcp-alphafold --host $MCP_HOST --port $MCP_PORT --transport $MCP_TRANSPORT"]

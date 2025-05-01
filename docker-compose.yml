@@ -1,0 +1,12 @@
+services:
+  alphafold-mcp-server:
+    platform: linux/amd64
+    build:
+      context: .
+    image: mcp-alphafold
+    container_name: mcp-alphafold
+    ports:
+      - 8000:8000
+    environment:
+      MCP_TRANSPORT: sse
+    restart: unless-stopped
