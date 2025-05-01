@@ -85,9 +85,9 @@ async def get_uniprot_summary(
         data = response.model_dump_json(exclude_none=True)
     else:
         error_msg = f"Error {error.code if error else 'Unknown'}: {error.message if error else 'Unknown error'}"
-        data = {"error": error_msg}
+        error_data: Dict[str, Any] = {"error": error_msg}
 
-    return json.dumps(data) if output_json else data
+    return json.dumps(data) if output_json else error_data
 
 
 @with_docstring("uniprot_annotations.md")
@@ -117,6 +117,6 @@ async def get_annotations(
         data = response.model_dump_json(exclude_none=True)
     else:
         error_msg = f"Error {error.code if error else 'Unknown'}: {error.message if error else 'Unknown error'}"
-        data = {"error": error_msg}
+        error_data: Dict[str, Any] = {"error": error_msg}
 
-    return json.dumps(data) if output_json else data
+    return json.dumps(data) if output_json else error_data
