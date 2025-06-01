@@ -1,8 +1,6 @@
-from pathlib import Path
-
 import pytest
 
-from mcp_alphafold.utils.doc import load_docstring, with_docstring
+from mcp_alphafold.utils.doc import DocLoader
 
 
 @pytest.fixture
@@ -14,29 +12,35 @@ def mock_docs_dir(tmp_path, monkeypatch):
     test_md = docs_dir.joinpath("test.md")
     test_md.write_text("This is a test documentation")
 
-    def mock_parent_dir(*args, **kwargs):
-        return tmp_path
-
-    monkeypatch.setattr(Path, "parent", property(mock_parent_dir))
+    # Patch DocLoader to use the tmp_path as docs_dir
+    monkeypatch.setattr(DocLoader, "_docs_dir", docs_dir)
     return docs_dir
 
 
-def test_load_docstring_existing_file(mock_docs_dir):
-    """Test laoding docstring from an existing file."""
-    content = load_docstring("test.md")
+def test_get_doc_existing_file(mock_docs_dir):
+    """Test loading docstring from an existing file."""
+    loader = DocLoader()
+    content = loader.get_doc("test.md")
     assert content == "This is a test documentation"
 
 
-def test_load_docstring_missing_file(mock_docs_dir):
+def test_get_doc_missing_file(mock_docs_dir):
     """Test loading docstring from a non-existent file."""
-    content = load_docstring("nonexistent.md")
-    assert content == "Documentation file nonexistent.md not found."
+    loader = DocLoader()
+    try:
+        loader.get_doc("nonexistent.md")
+    except FileNotFoundError as e:
+        assert "Documentation file" in str(e)
+        assert "nonexistent.md" in str(e)
+    else:
+        raise AssertionError("Expected FileNotFoundError")
 
 
 def test_with_docstring_decorator(mock_docs_dir):
     """Test the with_docstring decorator."""
+    loader = DocLoader()
 
-    @with_docstring("test.md")
+    @loader.with_docstring("test.md")
     def test_function():
         pass
 

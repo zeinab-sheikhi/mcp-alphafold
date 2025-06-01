@@ -1,4 +1,4 @@
-.PHONY: help run-server clean install install-uv build-docker run-docker checks update-pre-commit type
+.PHONY: help run-server clean install install-uv build-docker run-docker checks update-pre-commit type inspector
 
 UV_COMMAND := uv
 
@@ -43,6 +43,10 @@ test:
 
 test-coverage:
 	uv run pytest --cov=mcp_alphafold --cov-report=term-missing
+
+inspector:
+	@echo "🚀 Starting MCP Inspector"
+	npx @modelcontextprotocol/inspector uv run --with . mcp-alphafold run
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +

@@ -8,10 +8,11 @@ from mcp_alphafold.tools.models import (
     EntrySummaryResponse,
     UniprotSummaryResponse,
 )
-from mcp_alphafold.utils.doc import with_docstring
+from mcp_alphafold.utils.doc import DocLoader
 from mcp_alphafold.utils.http import request_api
 
 BASE_URL = "https://alphafold.ebi.ac.uk/api"
+doc_loader = DocLoader()
 
 
 def alphafold_tools(mcp: FastMCP):
@@ -25,7 +26,7 @@ def alphafold_tools(mcp: FastMCP):
         mcp.add_tool(tool)
 
 
-@with_docstring("alphafold_prediction.md")
+@doc_loader.with_docstring("alphafold_prediction.md")
 async def get_alphafold_prediction(
     qualifier: str,
     sequence_checksum: Optional[str] = None,
@@ -58,7 +59,7 @@ async def get_alphafold_prediction(
     return json.dumps(data) if output_json else data  # type: ignore
 
 
-@with_docstring("uniprot_summary.md")
+@doc_loader.with_docstring("uniprot_summary.md")
 async def get_uniprot_summary(
     qualifier: str,
     output_json: bool = True,
@@ -90,7 +91,7 @@ async def get_uniprot_summary(
     return json.dumps(data) if output_json else error_data
 
 
-@with_docstring("uniprot_annotations.md")
+@doc_loader.with_docstring("uniprot_annotations.md")
 async def get_annotations(
     qualifier: str,
     annotation_type: str = "MUTAGEN",
