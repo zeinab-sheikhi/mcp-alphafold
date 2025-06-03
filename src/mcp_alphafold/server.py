@@ -4,7 +4,7 @@ import sys
 from contextlib import contextmanager
 from typing import Generator, Literal, cast
 
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 from mcp_alphafold.settings import settings
 from mcp_alphafold.tools.alphafold import alphafold_tools
@@ -16,14 +16,8 @@ class AlphaFoldMCP:
     def __init__(
         self,
         name: str = settings.SERVER_NAME,
-        host: str = settings.SERVER_HOST,
-        port: int = settings.SERVER_PORT,
     ):
-        self.app = FastMCP(
-            name=name,
-            host=host,
-            port=port,
-        )
+        self.app = FastMCP(name=name)
         self._register_tools()
         self._shutdown_requested = False
 
@@ -53,6 +47,7 @@ class AlphaFoldMCP:
     @contextmanager
     def _setup_signal_handlers(self) -> Generator[None, None, None]:
         """Set up signal handlers for graceful shutdown."""
+
         # Store previous handlers to restore them later
         previous_sigint = signal.getsignal(signal.SIGINT)
         previous_sigterm = signal.getsignal(signal.SIGTERM)
@@ -68,14 +63,24 @@ class AlphaFoldMCP:
             signal.signal(signal.SIGINT, previous_sigint)
             signal.signal(signal.SIGTERM, previous_sigterm)
 
-    def run(self, transport: str = "sse") -> None:
+    def run(
+        self,
+        host: str,
+        port: int,
+        transport: str,
+    ) -> None:
         """Run the AlphaFold MCP server.
 
         Args:
-            transport: Transport to use for MCP communication ("stdio" or "sse")
+            transport: Transport to use for MCP communication ("stdio", "streamable-http")
         """
         with self._setup_signal_handlers():
             try:
-                self.app.run(transport=cast(Literal["stdio", "sse"], transport))
-            except Exception:
+                self.app.run(
+                    host=host,
+                    port=port,
+                    transport=cast(Literal["stdio", "streamable-http"], transport),
+                )
+            except Exception as e:
+                print(f"Error: {e}")
                 sys.exit(1)

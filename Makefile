@@ -8,7 +8,12 @@ help:
 	@echo "  make clean   - Clean up cache files"
 
 run-server:
-	mcp-alphafold
+	uv run mcp-alphafold
+
+run-inspector:
+
+	@echo "🚀 Starting MCP Inspector"
+	fastmcp dev src/mcp_alphafold/cli.py:app
 
 install-uv:
 	@which $(UV_COMMAND) >/dev/null 2>&1 || (echo "Could not find 'uv'! Installing..."; curl -LsSf https://astral.sh/uv/install.sh | sh)
@@ -43,10 +48,6 @@ test:
 
 test-coverage:
 	uv run pytest --cov=mcp_alphafold --cov-report=term-missing
-
-inspector:
-	@echo "🚀 Starting MCP Inspector"
-	npx @modelcontextprotocol/inspector uv run --with . mcp-alphafold run
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
