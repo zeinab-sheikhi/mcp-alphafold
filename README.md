@@ -91,6 +91,9 @@ source .venv/bin/activate  # On Unix/macOS
 make install
 ```
 
+3. Run the server with
+```make run-server ```
+
 ### 🐳 Docker
 
 Build and run the Docker container:
