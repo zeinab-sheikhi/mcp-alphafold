@@ -1,7 +1,7 @@
 import signal
 
 import pytest
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 from mcp_alphafold.server import AlphaFoldMCP
 from mcp_alphafold.settings import settings
@@ -31,13 +31,13 @@ def test_run_server(mocker):
     mock_run = mocker.patch.object(server.app, "run")
 
     # Test with default transport
-    server.run()
-    mock_run.assert_called_once_with(transport="sse")
+    server.run(host=settings.SERVER_HOST, port=settings.SERVER_PORT, transport=settings.TRANSPORT)
+    mock_run.assert_called_once_with(host=settings.SERVER_HOST, port=settings.SERVER_PORT, transport=settings.TRANSPORT)
 
     # Test with custom transport
     mock_run.reset_mock()
-    server.run(transport="stdio")
-    mock_run.assert_called_once_with(transport="stdio")
+    server.run(host="localhost", port=8000, transport="stdio")
+    mock_run.assert_called_once_with(host="localhost", port=8000, transport="stdio")
 
 
 def test_signal_handlers(mocker):
@@ -71,7 +71,7 @@ def test_run_handles_exceptions(mocker):
     mocker.patch.object(server.app, "run", side_effect=Exception("Test error"))
 
     with pytest.raises(SystemExit) as exc_info:
-        server.run()
+        server.run(host=settings.SERVER_HOST, port=settings.SERVER_PORT, transport=settings.TRANSPORT)
 
     assert exc_info.value.code == 1
 
