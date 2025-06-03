@@ -6,7 +6,6 @@ import logging
 import os
 import random
 from io import StringIO
-from ssl import PROTOCOL_TLS_CLIENT, SSLContext, TLSVersion
 from typing import Any, Dict, Literal, Optional, Tuple, Type, TypeVar, Union
 
 import httpx
@@ -24,38 +23,6 @@ T = TypeVar("T", bound=BaseModel)
 class RequestError(BaseModel):
     code: int
     message: str
-
-
-# --------------------------------
-# SSL CONFIGURATION
-# --------------------------------
-def get_ssl_context(
-    cert_file: Optional[str] = None,
-    key_file: Optional[str] = None,
-    tls_version: TLSVersion = TLSVersion.TLSv1_3,
-) -> SSLContext:
-    """Create an SSLContext with the specified TLS version."""
-
-    cert_file_path = cert_file or settings.SSL_CERT_FILE
-    key_file_path = key_file or settings.SSL_KEY_FILE
-
-    if not cert_file_path:
-        raise ValueError("Certificate file path not provided and SSL_CERT_FILE environment variable not set")
-    if not key_file_path:
-        raise ValueError("Key file path not provided and SSL_KEY_FILE environment variable not set")
-
-    if not os.path.exists(cert_file_path):
-        raise FileNotFoundError(f"Certificate file not found at {cert_file_path}")
-    if not os.path.exists(key_file_path):
-        raise FileNotFoundError(f"Key file not found at {key_file_path}")
-
-    context = SSLContext(PROTOCOL_TLS_CLIENT)
-    context.load_cert_chain(certfile=cert_file_path, keyfile=key_file_path)
-    context.maximum_version = tls_version
-    context.minimum_version = tls_version
-    context.load_verify_locations(cafile=cert_file_path)
-    context.check_hostname = False  # disable for testing purposes; enable in production
-    return context
 
 
 # --------------------------------
@@ -104,7 +71,6 @@ async def call_http(
     method: str,
     url: str,
     params: Optional[Dict[str, Any]] = None,
-    verify: Union[SSLContext, str, bool] = False,
     timeout: Optional[int] = None,
     retries: int = 3,
     backoff_factor: float = 0.5,
@@ -120,9 +86,10 @@ async def call_http(
     for attempt in range(retries + 1):
         try:
             async with httpx.AsyncClient(
-                verify=verify,
+                verify=False,
                 http2=False,
                 timeout=timeout,
+                trust_env=False,
             ) as client:
                 if method.upper() == "GET":
                     resp = await client.get(url, params=params)
@@ -155,11 +122,10 @@ async def request_api(
     response_model_type: Optional[Type[T]] = None,
     method: Literal["GET", "POST"] = "GET",
     cache_ttl: Optional[int] = None,
-    ssl_context: Optional[SSLContext] = None,
     retries: int = 3,
     rate_limit_delay: Optional[float] = None,
 ) -> Tuple[Optional[T], Optional[RequestError]]:
-    """Main method for API request with SSL, cache, retry, and parsing."""
+    """Main method for API request with cache, retry, and parsing."""
 
     cache_ttl = cache_ttl or settings.CACHE_TTL
     params: Optional[Dict[str, Any]] = None
@@ -171,15 +137,12 @@ async def request_api(
         else:
             params = request
 
-    verify: Union[SSLContext, str, bool] = ssl_context if ssl_context else False
-
     # No cache: always make the request
     if cache_ttl == 0:
         status, content = await call_http(
             method=method,
             url=url,
             params=params,
-            verify=verify,
             retries=retries,
             rate_limit_delay=rate_limit_delay,
         )
@@ -196,7 +159,6 @@ async def request_api(
         method=method,
         url=url,
         params=params,
-        verify=verify,
         retries=retries,
         rate_limit_delay=rate_limit_delay,
     )

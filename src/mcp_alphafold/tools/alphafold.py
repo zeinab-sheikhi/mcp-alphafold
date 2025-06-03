@@ -1,7 +1,7 @@
 import json
 from typing import Any, Dict, List, Optional, Union
 
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 from mcp_alphafold.tools.models import (
     AnnotationResponse,

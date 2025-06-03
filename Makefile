@@ -1,4 +1,4 @@
-.PHONY: help run-server clean install install-uv build-docker run-docker checks update-pre-commit type inspector
+.PHONY: help run-server clean install install-uv build-docker run-docker checks update-pre-commit type inspector test-server
 
 UV_COMMAND := uv
 
@@ -8,12 +8,11 @@ help:
 	@echo "  make clean   - Clean up cache files"
 
 run-server:
-	uv run mcp-alphafold
+	mcp-alphafold
 
 run-inspector:
-
 	@echo "🚀 Starting MCP Inspector"
-	fastmcp dev src/mcp_alphafold/cli.py:app
+	npx @modelcontextprotocol/inspector http://localhost:9000/mcp/ --headers='{"Accept": "application/json, text/event-stream", "Content-Type": "application/json"}'
 
 install-uv:
 	@which $(UV_COMMAND) >/dev/null 2>&1 || (echo "Could not find 'uv'! Installing..."; curl -LsSf https://astral.sh/uv/install.sh | sh)
@@ -48,6 +47,16 @@ test:
 
 test-coverage:
 	uv run pytest --cov=mcp_alphafold --cov-report=term-missing
+
+test-server:
+	@echo "🔍 Testing server connection"
+	curl -v \
+		-H "Accept: application/json, text/event-stream" \
+		-H "Content-Type: application/json" \
+		-H "mcp-session-id: 36a47908af704133ae0988acd5e3ed05" \
+		-X POST \
+		-d '{"jsonrpc":"2.0","method":"initialize","params":{"protocolVersion":"2024-11-05"},"id":1}' \
+		http://localhost:9000/mcp/
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +

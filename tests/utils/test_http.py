@@ -13,16 +13,8 @@ from mcp_alphafold.utils.http import (
     generate_cache_key,
     get_cache,
     get_cache_response,
-    get_ssl_context,
     parse_response,
 )
-
-
-def test_get_ssl_context_missing_files():
-    """Test SSL context creation with nonexistent files."""
-    with pytest.raises(FileNotFoundError) as exc_info:
-        get_ssl_context("nonexistent.crt", "nonexistent.key")
-    assert "Certificate file not found" in str(exc_info.value)
 
 
 @pytest.mark.skip(reason="Model class, not a test class")

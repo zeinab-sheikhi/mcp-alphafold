@@ -5,7 +5,6 @@ from contextlib import contextmanager
 from typing import Generator, Literal, cast
 
 from fastmcp import FastMCP
-from mcp.server.fastmcp import FastMCP as MCPFastMCP
 
 from mcp_alphafold.settings import settings
 from mcp_alphafold.tools.alphafold import alphafold_tools
@@ -24,7 +23,7 @@ class AlphaFoldMCP:
 
     def _register_tools(self) -> None:
         """Register tools with the MCP server."""
-        alphafold_tools(mcp=cast(MCPFastMCP, self.app))
+        alphafold_tools(mcp=self.app)
 
     def _register_prompts(self) -> None:
         """Register prompts with the MCP server."""
@@ -80,10 +79,8 @@ class AlphaFoldMCP:
         with self._setup_signal_handlers():
             try:
                 if transport == "stdio":
-                    # Cast transport to the expected literal type
                     self.app.run(transport=cast(Literal["stdio", "streamable-http"], transport))
                 else:
-                    # For streamable-http transport, require host and port
                     if host is None or port is None:
                         raise ValueError("host and port are required for streamable-http transport")
                     self.app.run(
