@@ -2,7 +2,7 @@
 
 import sys
 
-from mcp_alphafold.cli import app
+from mcp_alphafold.cli import app  # type: ignore
 
 
 def main():

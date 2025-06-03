@@ -19,10 +19,12 @@ Add the server to your `claude_desktop_config.json` with configuration of:
       "command": "uv",
       "args": [
         "--directory",
-        "/path/to/mcp-alphafold",
+        "path to /mcp-alphafold/src/mcp_alphafold",
         "run",
-        "mcp-alphafold"
-      ],
+        "mcp-alphafold",
+        "--transport",
+        "stdio"
+      ]
     }
   }
 }
