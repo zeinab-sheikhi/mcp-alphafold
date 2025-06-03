@@ -8,5 +8,5 @@ services:
     ports:
       - 8000:8000
     environment:
-      MCP_TRANSPORT: sse
+      MCP_TRANSPORT: streamable-http
     restart: unless-stopped

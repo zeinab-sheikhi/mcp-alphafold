@@ -28,7 +28,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 ENV PATH="/app/.venv/bin:$PATH"
 ENV MCP_HOST=0.0.0.0
 ENV MCP_PORT=8000
-ENV MCP_TRANSPORT=sse
+ENV MCP_TRANSPORT=streamable-http
 
 EXPOSE 8000
 

@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     SERVER_NAME: str = "AlphaFoldMCP"
     SERVER_HOST: str = "127.0.0.1"
     SERVER_PORT: int = 9000
-    TRANSPORT: Literal["stdio", "streamable-http"] = "streamable-http"
+    TRANSPORT: Literal["stdio", "streamable-http"] = "stdio"
 
     # API settings
     MAX_RETIRES: int = 3

@@ -2,9 +2,10 @@ import logging
 import signal
 import sys
 from contextlib import contextmanager
-from typing import Generator, Optional
+from typing import Generator, Literal, cast
 
 from fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP as MCPFastMCP
 
 from mcp_alphafold.settings import settings
 from mcp_alphafold.tools.alphafold import alphafold_tools
@@ -17,13 +18,13 @@ class AlphaFoldMCP:
         self,
         name: str = settings.SERVER_NAME,
     ):
-        self.app = FastMCP(name=name)
+        self.app: FastMCP = FastMCP(name=name)
         self._register_tools()
         self._shutdown_requested = False
 
     def _register_tools(self) -> None:
         """Register tools with the MCP server."""
-        alphafold_tools(mcp=self.app)
+        alphafold_tools(mcp=cast(MCPFastMCP, self.app))
 
     def _register_prompts(self) -> None:
         """Register prompts with the MCP server."""
@@ -65,28 +66,30 @@ class AlphaFoldMCP:
 
     def run(
         self,
-        transport: str,
-        host: Optional[str] = None,
-        port: Optional[int] = None,
+        transport: Literal["stdio", "streamable-http"],
+        host: str | None = None,
+        port: int | None = None,
     ) -> None:
         """Run the AlphaFold MCP server.
 
         Args:
-            transport: Transport to use for MCP communication ("stdio", "streamable-http")
+            transport: Transport to use for MCP communication
             host: Host to bind the server to (only used with streamable-http transport)
             port: Port to bind the server to (only used with streamable-http transport)
         """
         with self._setup_signal_handlers():
             try:
                 if transport == "stdio":
-                    self.app.run(transport=transport)
+                    # Cast transport to the expected literal type
+                    self.app.run(transport=cast(Literal["stdio", "streamable-http"], transport))
                 else:
+                    # For streamable-http transport, require host and port
                     if host is None or port is None:
                         raise ValueError("host and port are required for streamable-http transport")
                     self.app.run(
                         host=host,
                         port=port,
-                        transport=transport,
+                        transport=cast(Literal["stdio", "streamable-http"], transport),
                     )
             except Exception as e:
                 logger.error(f"Server error: {e}", exc_info=True)
