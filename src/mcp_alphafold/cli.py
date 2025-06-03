@@ -1,11 +1,15 @@
 """Command-line interface for the AlphaFold MCP server."""
 
+import logging
+import sys
 from typing import Optional
 
 import typer
 
 from mcp_alphafold.server import AlphaFoldMCP
 from mcp_alphafold.settings import settings
+
+logger = logging.getLogger(__name__)
 
 app = typer.Typer()
 
@@ -22,10 +26,16 @@ def run(
     """Run the AlphaFold MCP server."""
     try:
         server = AlphaFoldMCP(name=name or settings.SERVER_NAME)
-        server.run(
-            host=host or settings.SERVER_HOST,
-            port=port or settings.SERVER_PORT,
-            transport=transport or settings.TRANSPORT,
-        )
+        transport = transport or settings.TRANSPORT
+
+        if transport == "stdio":
+            server.run(transport=transport)
+        else:
+            server.run(
+                host=host or settings.SERVER_HOST,
+                port=port or settings.SERVER_PORT,
+                transport=transport,
+            )
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Server error: {e}", exc_info=True)
+        sys.exit(1)

@@ -2,7 +2,7 @@ import logging
 import signal
 import sys
 from contextlib import contextmanager
-from typing import Generator, Literal, cast
+from typing import Generator, Optional
 
 from fastmcp import FastMCP
 
@@ -65,22 +65,29 @@ class AlphaFoldMCP:
 
     def run(
         self,
-        host: str,
-        port: int,
         transport: str,
+        host: Optional[str] = None,
+        port: Optional[int] = None,
     ) -> None:
         """Run the AlphaFold MCP server.
 
         Args:
             transport: Transport to use for MCP communication ("stdio", "streamable-http")
+            host: Host to bind the server to (only used with streamable-http transport)
+            port: Port to bind the server to (only used with streamable-http transport)
         """
         with self._setup_signal_handlers():
             try:
-                self.app.run(
-                    host=host,
-                    port=port,
-                    transport=cast(Literal["stdio", "streamable-http"], transport),
-                )
+                if transport == "stdio":
+                    self.app.run(transport=transport)
+                else:
+                    if host is None or port is None:
+                        raise ValueError("host and port are required for streamable-http transport")
+                    self.app.run(
+                        host=host,
+                        port=port,
+                        transport=transport,
+                    )
             except Exception as e:
-                print(f"Error: {e}")
+                logger.error(f"Server error: {e}", exc_info=True)
                 sys.exit(1)
