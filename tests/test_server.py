@@ -30,14 +30,14 @@ def test_run_server(mocker):
     server = AlphaFoldMCP()
     mock_run = mocker.patch.object(server.app, "run")
 
-    # Test with default transport
-    server.run(host=settings.SERVER_HOST, port=settings.SERVER_PORT, transport=settings.TRANSPORT)
-    mock_run.assert_called_once_with(host=settings.SERVER_HOST, port=settings.SERVER_PORT, transport=settings.TRANSPORT)
+    # Test with streamable-http transport
+    server.run(host=settings.SERVER_HOST, port=settings.SERVER_PORT, transport="streamable-http")
+    mock_run.assert_called_once_with(host=settings.SERVER_HOST, port=settings.SERVER_PORT, transport="streamable-http")
 
-    # Test with custom transport
+    # Test with stdio transport
     mock_run.reset_mock()
-    server.run(host="localhost", port=8000, transport="stdio")
-    mock_run.assert_called_once_with(host="localhost", port=8000, transport="stdio")
+    server.run(transport="stdio")
+    mock_run.assert_called_once_with(transport="stdio")
 
 
 def test_signal_handlers(mocker):
