@@ -32,7 +32,9 @@ def test_run_server(mocker):
 
     # Test with streamable-http transport
     server.run(host=settings.SERVER_HOST, port=settings.SERVER_PORT, transport="streamable-http")
-    mock_run.assert_called_once_with(host=settings.SERVER_HOST, port=settings.SERVER_PORT, transport="streamable-http")
+    mock_run.assert_called_once_with(
+        host=settings.SERVER_HOST, port=settings.SERVER_PORT, transport="streamable-http", path="/mcp/"
+    )
 
     # Test with stdio transport
     mock_run.reset_mock()

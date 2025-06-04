@@ -12,7 +12,15 @@ run-server:
 
 run-inspector:
 	@echo "🚀 Starting MCP Inspector"
-	npx @modelcontextprotocol/inspector http://localhost:9000/mcp/ --headers='{"Accept": "application/json, text/event-stream", "Content-Type": "application/json"}'
+	npx @modelcontextprotocol/inspector \
+	uv \
+	--directory src/mcp_alphafold \
+	run \
+	mcp-alphafold \
+	--transport streamable-http \
+	--host 0.0.0.0 \
+	--port 9000 \
+	--log-level DEBUG
 
 install-uv:
 	@which $(UV_COMMAND) >/dev/null 2>&1 || (echo "Could not find 'uv'! Installing..."; curl -LsSf https://astral.sh/uv/install.sh | sh)
@@ -47,16 +55,6 @@ test:
 
 test-coverage:
 	uv run pytest --cov=mcp_alphafold --cov-report=term-missing
-
-test-server:
-	@echo "🔍 Testing server connection"
-	curl -v \
-		-H "Accept: application/json, text/event-stream" \
-		-H "Content-Type: application/json" \
-		-H "mcp-session-id: 36a47908af704133ae0988acd5e3ed05" \
-		-X POST \
-		-d '{"jsonrpc":"2.0","method":"initialize","params":{"protocolVersion":"2024-11-05"},"id":1}' \
-		http://localhost:9000/mcp/
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +

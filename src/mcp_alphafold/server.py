@@ -17,7 +17,10 @@ class AlphaFoldMCP:
         self,
         name: str = settings.SERVER_NAME,
     ):
-        self.app: FastMCP = FastMCP(name=name)
+        self.app: FastMCP = FastMCP(
+            name=name,
+            instructions="AlphaFold MCP server for protein structure prediction",
+        )
         self._register_tools()
         self._shutdown_requested = False
 
@@ -83,10 +86,12 @@ class AlphaFoldMCP:
                 else:
                     if host is None or port is None:
                         raise ValueError("host and port are required for streamable-http transport")
+
                     self.app.run(
                         host=host,
                         port=port,
                         transport=cast(Literal["stdio", "streamable-http"], transport),
+                        path="/mcp/",
                     )
             except Exception as e:
                 logger.error(f"Server error: {e}", exc_info=True)
