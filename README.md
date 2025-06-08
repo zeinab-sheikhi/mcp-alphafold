@@ -8,10 +8,10 @@ Built with FastMCP and Python, it offers tools for protein structure predictions
 - uv package manager
 
 
-### ⚙️ Configuration
-
-Add the server to your `claude_desktop_config.json` with configuration of:
-
+### ⚙️ Configure Claude Desktop
+- Open Claude Desktop settings
+- Navigate to Developer section
+- Click "Edit Config" and add:
 ```json
 {
   "mcpServers": {
@@ -28,10 +28,12 @@ Add the server to your `claude_desktop_config.json` with configuration of:
     }
   }
 }
-```
+   ```
+   - Restart Claude Desktop and start chatting about biomedical topics!
+
 ### 🐳 Using with Docker
 
-```json
+```
 "mcpServers": {
   "mcp_alphafold": {
     "command": "docker",
